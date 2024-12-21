@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>T4Student-quiz</title>
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css"
+    />
+    <div class="gradient-background">
+      <section id="titel" class="gradient-background" style="position:static;">
+          <div style="display:flex; align-items: center;">
+              
+              <img src="img/t4-1-128.png" alt="icon-square" width="50px" height="55px">
+              <h1 style=" margin-left: 10px;">T4Student<br></h1>  
+                                                 
+                <a id="menu-icon" class="menu-icon" onclick="onMenuClick()">
+                  <i class="fa fa-bars"></i>
+                </a>
+          
+                <div id="navigation-bar" class="nav-bar">               
+                  <a href="/page1Serach-stu">Search</a>
+                  <a href="/profile-stu">Profile</a>              
+                  <a href="/" id="singout">singout</a>
+                </div>   
+          
+         
+                
+          </div>
+  
+      </section>
+      <script src="js/page1-1.js"></script>
+      <script src="jssingout.js"></script>
+  
+      </div>
+</head>
+<body>
+    <h1 class="head">Quiz Table</h1>
+    <main class="form-page w-100 m-auto" style="border-top:1vh;">
+        <form id="hiddenForm" action="/pagetablesearch" method="POST" style="display: none;">
+            <input type="hidden" name="id_q" id="id_q_input" value="">
+          </form>
+          
+               <% if (locals.list != '' ){%>  
+             
+                <table>
+                  <thead>
+                    <tr>
+                      <th>ID</th>
+                      <th>Name</th>
+                      <th>Major</th>
+                      <th>Course</th>
+                      <th>Mid/Final</th>
+                      <th>About</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                   
+                   <% for(let i=0 ; i < list.length ; i++)  {%>
+                        <tr onclick="submitForm('<%= list[i].id_q %>')">
+                            <td><%= list[i].id_q %></td>
+                            <td><%= list[i].fname + ' ' + list[i].lname %></td>
+                            <td><%= list[i].major %></td>
+                            <td><%= list[i].course %></td>
+                            <td><%= list[i].mid_final %></td>
+                            <td><%= list[i].about_quiz %></td>
+                          </tr>
+                        <%}%>
+                    
+                  </tbody>
+                </table>
+             <%} else {%>
+                        <h1>sorry but not found any exam for this Teacher</h1><%}%>
+       </main>
+        <script>
+            function submitForm(id_q) {
+              // Set the hidden input value to the clicked row's ID
+              document.getElementById('id_q_input').value = id_q;
+              // Submit the hidden form
+              document.getElementById('hiddenForm').submit();
+            }
+          </script>
+</body>
+
+
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha2/dist/css/bootstrap.min.css" rel="stylesheet"
+integrity="sha384-aFq/bzH65dt+w6FI2ooMVUpc+21e0SRygnTpmBvdBgSdnuTN7QbdgL+OapgHtvPp" crossorigin="anonymous">
+<link href="style/table.css" rel="stylesheet">

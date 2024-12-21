@@ -1,0 +1,49 @@
+CREATE TABLE student (
+fname char(20)
+,lname char(20), 
+email char(50) PRIMARY KEY,
+password text,
+id_student int , 
+avgteststu float  
+);
+
+
+CREATE TABLE teacher 
+(fname char(20)
+,lname char(20), 
+email char(50) PRIMARY KEY,
+password text,
+count_student_take_quiz int , 
+cv_doctor text
+);
+
+CREATE TABLE student_qustion
+(
+email char(50) REFERENCE student(email),
+id_q  int REFERENCE qustion(id_q) ,
+PRIMARY KEY (email, id_q)
+);
+
+
+CREATE TABLE  qustion (
+major char(20)
+,course char(20), 
+id_q int PRIMARY KEY, 
+mid_final char(20) 
+);
+
+CREATE TABLE Qchoise (
+id_q INT REFERENCES qustion(id_q) , 
+id_c int PRIMARY KEY, 
+true_c boolean,
+choise text
+);
+
+CREATE TABLE qustion_Qchoise 
+(
+id_q int REFERENCES qustion(id_q)   ,
+id_c int REFERENCES Qchoise(id_c)  ,
+PRIMARY KEY (id_q , id_c )
+);
+
+

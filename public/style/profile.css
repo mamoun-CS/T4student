@@ -1,0 +1,400 @@
+.gradient-background {
+    background: linear-gradient(300deg, #ef8172,#ff4c69, #00bfff );
+    background-size: 180% 180%;
+    animation: gradient-animation 9ms ease infinite;
+   
+  }
+  .nav-bar :active
+  {   
+    color: black;
+  }
+
+  .form-page {
+    width: 100%;
+    max-width: 400px; 
+    padding: 50px 5px; 
+    box-shadow: 0 4px 8px rgb(199, 91, 91); 
+        display: flex;
+        justify-content: center; 
+        align-items: center; 
+       transform: translateY(30%);
+      
+  }
+  .radios
+  {
+    margin :2%;
+  }
+
+.contenr
+{
+ display: grid;
+ height: 100vh;
+grid-template-columns: 1fr 1fr 3fr;
+grid-template-rows: 1fr 1fr ;
+ gap: 10px;
+}
+.one
+{
+     grid-area:3/2/1/1;
+}
+.two
+{
+     grid-area: 1/2/2/4;
+}
+.three
+{
+     grid-area: 2/2/3/4;
+   
+
+} 
+
+
+
+  
+  :root {
+    --bgcolor: #1a79cf;
+    
+  }
+  
+  * {
+    margin: 0;
+    padding: 0;
+  }
+  
+  .page-header {
+    background-color: var(--bgcolor);
+    padding: 1.3rem;
+    display: flex;
+    justify-content: space-between;
+  }
+  .logo {
+    color: white;
+    align-self: center;
+    margin-left: 1.2rem;
+    font-size: 2.5rem;
+  }
+  
+
+
+
+
+
+  .nav-bar {
+    margin: auto;
+     z-index: 1;
+  }
+  
+  .nav-bar a {
+    color: rgb(246, 239, 239);
+    padding: 1.5rem;
+    cursor: pointer;
+    text-decoration: none;
+    font-size: 1.2rem;
+    overflow: hidden;
+    
+   
+  }
+  
+  .menu-icon {
+    color: rgb(245, 240, 240);
+    cursor: pointer;
+    display: none;
+    position: absolute;
+    top: 10px;
+    right: 20px;
+    font-size: 20px;
+    z-index: 1;
+  }
+  
+  button {
+    font-size: 1rem;
+    border: 1px solid black;
+    border-radius: 5px;
+    padding: 0.9rem;
+  }
+  button {
+    font-size: 1rem;
+    border: none; /* No border for buttons */
+    border-radius: 5px;
+    padding: 10px 15px; /* Padding for a better button size */
+    background-color: var(--bgcolor); /* Use the defined color */
+    color: rgb(246, 241, 241); /* White text */
+    cursor: pointer; /* Pointer on hover */
+    transition: background-color 0.3s; /* Smooth background color transition */
+}
+button:hover {
+    background-color: red; /* Darken on hover for feedback */
+}
+
+.gradient-background {
+  background: linear-gradient(300deg, #ef8172,#ff4c69, #00bfff );
+  background-size: 180% 180%;
+  animation: gradient-animation 9ms ease infinite;
+ 
+}
+.nav-bar :active
+{   
+  color: black;
+}
+
+.form-page {
+  width: 100%;
+  max-width: 400px; 
+  padding: 50px 5px; 
+  box-shadow: 0 4px 8px rgb(199, 91, 91); 
+      display: flex;
+      justify-content: center; 
+      align-items: center; 
+     transform: translateY(30%);
+    
+}
+.radios
+{
+  margin :2%;
+}
+
+.contenr
+{
+display: grid;
+height: 100vh;
+grid-template-columns: 1fr 1fr 3fr;
+grid-template-rows: 1fr 1fr ;
+gap: 10px;
+}
+.one
+{
+   grid-area:3/2/1/1;
+}
+.two
+{
+   grid-area: 1/2/2/4;
+}
+.three
+{
+   grid-area: 2/2/3/4;
+ 
+
+} 
+
+
+
+
+:root {
+  --bgcolor: #1a79cf;
+  
+}
+
+* {
+  margin: 0;
+  padding: 0;
+}
+
+.page-header {
+  background-color: var(--bgcolor);
+  padding: 1.3rem;
+  display: flex;
+  justify-content: space-between;
+}
+.logo {
+  color: white;
+  align-self: center;
+  margin-left: 1.2rem;
+  font-size: 2.5rem;
+}
+
+
+
+
+
+
+.nav-bar {
+  margin: auto;
+   z-index: 1;
+}
+
+.nav-bar a {
+  color: rgb(246, 239, 239);
+  padding: 1.5rem;
+  cursor: pointer;
+  text-decoration: none;
+  font-size: 1.2rem;
+  overflow: hidden;
+  
+ 
+}
+
+.menu-icon {
+  color: rgb(245, 240, 240);
+  cursor: pointer;
+  display: none;
+  position: absolute;
+  top: 10px;
+  right: 20px;
+  font-size: 20px;
+  z-index: 1;
+}
+
+button {
+  font-size: 1rem;
+  border: 1px solid black;
+  border-radius: 5px;
+  padding: 0.9rem;
+}
+button {
+  font-size: 1rem;
+  border: none; /* No border for buttons */
+  border-radius: 5px;
+  padding: 10px 15px; /* Padding for a better button size */
+  background-color: var(--bgcolor); /* Use the defined color */
+  color: rgb(246, 241, 241); /* White text */
+  cursor: pointer; /* Pointer on hover */
+  transition: background-color 0.3s; /* Smooth background color transition */
+}
+button:hover {
+  background-color: red; /* Darken on hover for feedback */
+}
+.show
+{
+  display: flex;
+  background-color: #ff4c69;
+  justify-content: center;
+  text-align: center;
+ gap: 30%;
+}
+
+
+
+/* Improved styling */
+.progress {  
+  position: relative;
+  border-radius: 100px;
+  height: 100px;
+  width: 100px;
+  cursor: pointer;
+  margin: 20px auto;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.progress-circle {
+  transform: rotate(-90deg);
+}
+
+.progress-circle-back {
+  fill: none; 
+  stroke: #D2D2D2;
+  stroke-width: 10px;
+  
+}
+
+.progress-circle-prog {
+  fill: none; 
+  stroke: #00bfff;
+  stroke-width: 10px;
+  stroke-dasharray: 0 999; /* Dynamically updated */
+  stroke-dashoffset: 0;
+  transition: stroke-dasharray 0.7s linear 0s;
+}
+.progress-text {
+  position: absolute;
+  font-size: 2em;
+  font-weight: bold;
+  color: #000;
+  top: 30px;
+}
+
+
+
+@media screen and (max-width: 380px) {
+  .show
+  {
+  display: inline-block;
+  background-color: #1a79cf;
+  
+  }
+
+  .nav-bar {
+    display: none;
+    position: absolute;
+    top: 3.7rem;
+    right: 1%;
+    width: 50%;
+    background-color: var(--bgcolor);
+    background: linear-gradient(300deg, #ef8172,#ff4c69, #00bfff );
+    text-align:center;
+    
+    
+  }
+
+  .nav-bar.responsive {
+    display: block;
+  }
+
+  .nav-bar a {
+    display: block;
+  }
+
+  .menu-icon {
+    display: block;
+    
+  }
+
+  button {
+    padding: 0.4rem;
+  }
+  .logo {
+    font-size: 1.4rem;
+  }
+}
+  
+@media screen and (max-width: 100px) {
+  .contenr
+  {
+      display: block;
+      text-align: center;
+  }
+}
+  @media screen and (max-width: 750px) {
+    .contenr
+    {
+        display: block;
+        text-align: center;
+    }
+
+    
+
+    .nav-bar {
+      display: none;
+      position: absolute;
+      top: 3.7rem;
+      right: 1%;
+      width: 50%;
+      background-color: var(--bgcolor);
+      background: linear-gradient(300deg, #ef8172,#ff4c69, #00bfff );
+      text-align:center;
+      
+      
+    }
+  
+    .nav-bar.responsive {
+      display: block;
+    }
+  
+    .nav-bar a {
+      display: block;
+    }
+  
+    .menu-icon {
+      display: block;
+      
+    }
+  
+    button {
+      padding: 0.4rem;
+    }
+    .logo {
+      font-size: 1.4rem;
+    }
+  }
+    

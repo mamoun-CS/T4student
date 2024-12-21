@@ -1,0 +1,42 @@
+.form 
+{
+   background-color: rgb(238, 243, 241);
+   color: rgb(1, 13, 9);
+}
+.timer-box {
+    position: fixed;
+    bottom: 20px;
+    right: 20px;
+    background-color: #333;
+    color: #fff;
+    padding: 10px 20px;
+    border-radius: 8px;
+    font-size: 50px;
+    font-family: Arial, sans-serif;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.2);
+    z-index: 1000;
+    text-align: center;
+  }
+  
+  .timer-box #timer {
+    font-weight: bold;
+  }
+  
+  #ans{
+    background-color: rgb(120, 202, 124); 
+    color: rgb(0, 2, 11);
+  }
+  #dis{
+  background-color: red;
+  }
+  .form{
+    font-size: 150%;
+  }
+  .avgs {
+    font-size: 15vh;
+    color: rgb(27, 150, 27);
+  }
+  .avgf {
+    font-size: 15vh;
+    color: rgb(150, 27, 27);
+  }

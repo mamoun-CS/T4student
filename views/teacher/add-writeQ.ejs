@@ -1,0 +1,196 @@
+<!DOCTYPE html>
+<html>
+<head>
+
+     <title>T4Student-Screatequiz</title>
+     <link
+    rel="stylesheet"
+    href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css"
+     />
+   
+  
+</head>
+
+<body>
+
+    <section>
+
+        <section>
+        <div class="gradient-background">
+            <section id="titel" class="gradient-background" style="position:static;">
+                <div style="display:flex; align-items: center;">
+                    
+                    <img src="img/t4-1-128.png" alt="icon-square" width="50px" height="55px">
+                    <h1 style=" margin-left: 10px;">T4Student<br></h1>  
+                       <a id="menu-icon" class="menu-icon" onclick="onMenuClick()">
+                        <i class="fa fa-bars"></i>
+                      </a>
+                
+                      <div id="" class="nav-bar">               
+                        <a href="/profile-tec">profile</a>
+                        <a href="/editquiz-tec">Edit Quiz</a>
+                        <a href="/createquiz-tec">Create Quiz</a>             
+                        <a href="/" id="singout" >sing out </a>
+                      </div>                               
+                </div>
+            </section>
+
+            </div>
+        </section>
+
+           
+            <div class="layout">
+                <a id="menu-icon" class="menu-icon" onclick="onMenuClick()">
+                    <i class="fa fa-bars"></i>
+                  </a>
+                  
+                <div class="side-bar sode-bar nav-bar" id="navigation-bar">
+                    <div id="QS" class="start">
+                         <h1 class="nums" >QS</h1>
+        
+                    </div>
+                    <br>
+
+                    <div id="baraddqustion" class="sode-bar">
+                        <%for (let i =0 ; i < locals.numberQ+1 ; i++){ %>
+                         <div class="start" id="Q<%= i %>" name="list" value="<%= i %>">
+                                 <h1 id="num"></h1>
+                                    <% if(i < locals.numberQ ) {%>
+                                 <!-- <P id="S<%=i%>"><%=JSON.stringify(locals.listdata[i], null, 2)%></P>-->
+                                  <P id="S<%=i%>"><%= locals.listdata[i] ? JSON.stringify(locals.listdata[i], null, 2) : 'No data available' %></P>
+                                     <% } %>
+                                 <h1 class='num'>Q<%= i+1 %> </h1>
+                         </div>
+                      <%} %> <!--<script>const sum = <%= locals.numberQ %></script>-->
+                    </div>
+                    <br>
+                 <% if (  locals.numberQ != 0    ) {%>
+                    <div class="viwedisaply bottom-right-button" >
+                        <a href="/submitQ"><button id="submitt" type="button" class="btn btn-outline-primary me-2" value="submit">Submit</button></a>
+                    </div>
+                   <%}%>
+        
+
+                            
+                                
+                        <script src="js/submitqustion.js"></script>
+                        
+                        
+                    
+                </div>
+
+                
+            
+                <div id="wquiz" class="main-content">
+                    <main class="inside-main-content">
+                        <form id="wquiz2" action="/startCreatequiz" method="POST" enctype="multipart/form-data">
+                            <!-- Question Input -->
+                            <div class="form-floating imgdes">
+                                <input type="text" class="form-control" id="question" name="question" placeholder="Enter your question" required>
+                               
+                                <label for="question">Enter your question:</label>
+                               <% if (locals.pathimg && locals.pathimg != "undifined"){%>
+                                <img id="upQ" src=<%=pathimg%> alt="Click to Upload" width="30px" height="50px">
+                               <% }else {%>
+                                <img id="upQ" src="img/images.svg" alt="Click to Upload" width="30px" height="50px">
+                                <%}%>
+                                <input type="file" id="fileInputmain" name="image" style="display: none;">
+                           
+                                </div>
+                            <br>
+                
+                            <!-- Options -->
+                            <div class="form-floating imgdes">
+                                <input type="text" class="form-control" id="option1" name="option1" placeholder="Option 1" required>
+                                <% if (locals.pathimg && locals.pathimg != "undifined"){%>
+                                    <img id="up1" src=<%=pathimg%> alt="Click to Upload" width="30px" height="50px">
+                                   <% }else {%>
+                                    <img id="up1" src="img/images.svg" alt="Click to Upload" width="30px" height="50px">
+                                    <%}%>
+                                    <input type="file" id="fileInput1" name="image1" style="display: none;">
+                                    <label for="option1">Option 1:</label>
+                            </div>
+                            <br>
+                            <div class="form-floating imgdes">
+                                <input type="text" class="form-control" id="option2" name="option2" placeholder="Option 2" required>
+                                <% if (locals.pathimg && locals.pathimg != "undifined"){%>
+                                    <img id="up2" src=<%=pathimg%> alt="Click to Upload" width="30px" height="50px">
+                                   <% }else {%>
+                                    <img id="up2" src="img/images.svg" alt="Click to Upload" width="30px" height="50px">
+                                    <%}%>
+                                    <input type="file" id="fileInput2" name="image2" style="display: none;">
+                                <label for="option2">Option 2:</label>
+                            </div>
+                            <br>
+                            <div class="form-floating imgdes">
+                                <input type="text" class="form-control" id="option3" name="option3" placeholder="Option 3" required>
+                                <% if (locals.pathimg && locals.pathimg != "undifined"){%>
+                                    <img id="up3" src=<%=pathimg%> alt="Click to Upload" width="30px" height="50px">
+                                   <% }else {%>
+                                    <img id="up3" src="img/images.svg" alt="Click to Upload" width="30px" height="50px">
+                                    <%}%>
+                                    <input type="file" id="fileInput3" name="image3" style="display: none;">
+                                <label for="option3">Option 3:</label>
+                            </div>
+                            <br>
+                            <div class="form-floating imgdes">
+                                <input type="text" class="form-control" id="option4" name="option4" placeholder="Option 4" required>
+                                <% if (locals.pathimg && locals.pathimg != "undifined"){%>
+                                    <img id="up4" src=<%=pathimg%> alt="Click to Upload" width="30px" height="50px">
+                                   <% }else {%>
+                                    <img id="up4" src="img/images.svg" alt="Click to Upload" width="30px" height="50px">
+                                    <%}%>
+                                    <input type="file" id="fileInput4" name="image4" style="display: none;">
+                                <label for="option4">Option 4:</label>
+                            </div>
+                            <br>
+                
+                            <!-- Select Correct Answer -->
+                            <div>
+                                <label for="correct-answer">Choose the correct answer:</label>
+                                <select id="correct-answer" name="correctAnswer" required>
+                                    <option value="1">Option 1</option>
+                                    <option value="2">Option 2</option>
+                                    <option value="3">Option 3</option>
+                                    <option value="4">Option 4</option>
+                                </select>
+                            </div>
+                            <br>
+                            
+                           
+                           <button class="btn btn-primary w-100 py-3" type="submit" id="save" name="save" value="save">Save & Next</button>  
+                             
+                            <br><br><br>
+                
+                
+
+                        </form>
+                    </main>
+                </div>
+
+
+            </div>
+            
+            <script src="js/uploaded-img.js"></script>
+        </section>
+    
+<script src="js/add-writeQ.js" ></script>
+</body>
+
+
+
+
+
+
+
+
+
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha2/dist/css/bootstrap.min.css" rel="stylesheet"
+integrity="sha384-aFq/bzH65dt+w6FI2ooMVUpc+21e0SRygnTpmBvdBgSdnuTN7QbdgL+OapgHtvPp" crossorigin="anonymous">
+<link href="style/creatquize.css" rel="stylesheet" > 
+<link href="style/creative/baseaddsquare.css" rel="stylesheet">
+<link href="style/creative/sidebar.css" rel="stylesheet">
+<script src="js/singout.js"></script>
+</html>

@@ -1,0 +1,229 @@
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+html, body {
+    height: 100%;
+    display: flex;
+}
+
+/* Layout structure */
+.layout {
+    display: grid;
+    grid-template-columns: 130px 1fr; /* 130px for the left bar, remaining space for content */
+    height: 100vh;
+    width: 100vw;
+}
+
+/* Left-side bar */
+.side-bar {
+    background-color: #1a79cf; /* Any color you'd like for the sidebar */
+    word-wrap: break-word; /* Break long words onto the next line */
+}
+
+/* Main content area */
+.main-content {
+    display: flex; 
+    justify-content: center; 
+    align-items: center; 
+    /* background-color: #c7d5c9; */
+    word-wrap: break-word;
+    height: 90%; 
+    width: 100%;
+    margin-left:10px ;
+   
+   
+} 
+.inside-main-content
+{
+    box-shadow: 0 4px 8px ;
+    padding: 20px;
+    width: 90%;
+    
+}
+/* Centered square IMG */
+.center-squareimg {
+    position: relative; 
+    width: 50%; 
+    height: 50%; 
+    padding: 20px;
+    box-shadow: 0 4px 8px;
+    background: linear-gradient(300deg, #ef8172, #ff4c69, #00bfff);
+    background-size: 180% 180%;
+    animation: gradient-animation 9ms ease infinite;
+    overflow: hidden; 
+}
+
+.center-squareimg:hover {
+    background: linear-gradient(600deg, #00bfff, #ef8172, #ff4c69);
+}
+
+.center-squareimg::after {
+   content: ""; 
+    background-image: url('./add-image.svg'); 
+    background-size: contain; 
+    background-repeat: no-repeat; 
+    width: 50%; 
+    height: 50%; 
+    position: absolute; 
+    top: 60%; 
+    left: 50%;
+    transform: translate(-50%, -50%); 
+    opacity: 0; 
+    transition: opacity 0.3s ease; 
+}
+
+.center-squareimg:hover::after {
+    opacity: 1; 
+}
+
+/* Centered square Q1 */
+.center-squareQ1 {
+    position: relative; 
+    width: 50%; 
+    height: 50%; 
+    padding: 20px;
+    box-shadow: 0 4px 8px;
+    background: linear-gradient(300deg, #ef8172, #ff4c69, #00bfff);
+    background-size: 180% 180%;
+    animation: gradient-animation 9ms ease infinite;
+    overflow: hidden; 
+}
+
+.center-squareQ1:hover {
+    background: linear-gradient(600deg, #00bfff, #ef8172, #ff4c69);
+}
+
+.center-squareQ1::after {
+    content: ""; 
+    background-image: url('./edit-document-icon.svg'); 
+    background-size: contain; 
+    background-repeat: no-repeat; 
+    width: 50%; 
+    height: 50%; 
+    position: absolute; 
+    top: 60%; 
+    left: 50%;
+    transform: translate(-50%, -50%); 
+    opacity: 0; 
+    transition: opacity 0.3s ease; 
+}
+
+.center-squareQ1:hover::after {
+    opacity: 1; 
+}
+.imgdes
+{
+    display: flex;
+    gap: 10px;
+}
+@media screen and (max-width : 750px){
+    
+    .layout {
+        display: grid;
+        grid-template-columns: 100% 1.5fr; 
+       gap: 10%;
+       justify-items: center;
+    }
+    .main-content {
+        display: inline-block;  
+       /* background-color: #c7d5c9; */
+       margin-top: 10%;
+        word-wrap: break-word;
+        height: fit-content; 
+        width: fit-content;
+
+        
+       
+    }
+
+    /* Left-side bar */
+    .side-bar {
+        background-color: (#ef8172); /* Any color you'd like for the sidebar */
+        word-wrap: break-word; /* Break long words onto the next line */
+    }
+    /* Centered square IMG */
+.center-squareimg {
+    position: relative;    
+    width: 280px; 
+    height: 250px;
+    margin-top: 30px;
+}
+
+
+/* Centered square Q1 */
+.center-squareQ1 {
+    width:280px; 
+    height: 250px;
+    margin-top: 60px;
+}
+}
+
+@media screen and (min-width : 1000px)
+{
+
+
+.center-squareimg {
+    
+    width: 30vh; 
+}
+.center-squareQ1 {
+    
+    width: 30vh; 
+}
+.center-squareimg::after
+{
+    margin-top: 20%;
+}
+.center-squareQ1::after
+{
+    margin-top: 20%;
+}
+.main-content
+{
+    gap: 30%;
+    background-color: #ffffff;
+}
+
+}
+@media screen and (max-width : 350px)
+{
+
+
+.center-squareimg {
+    display: block;
+    width: 190px;
+    height: 250px; 
+   margin-top: 10px;
+}
+.center-squareQ1 {
+    
+    display: block;
+    width: 190px;
+    height: 250px; 
+    margin-top: 30px;
+}
+.center-squareimg::after
+{
+    margin-top: 20%;
+}
+.center-squareQ1::after
+{
+    margin-top: 20%;
+}
+.main-content
+{
+    display: inline-block;
+   width: 100%;
+   height: fit-content;
+   margin-top: 30%;
+   
+}
+.imgdes
+{
+    display: block;
+}
+
+}

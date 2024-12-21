@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<head>
+
+  <meta charset="UTF-8" />
+  <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>T4Student-Search</title>
+  <link
+    rel="stylesheet"
+    href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css"
+  />
+  <div class="gradient-background">
+    <section id="titel" class="gradient-background" style="position:static;">
+        <div style="display:flex; align-items: center;">
+            
+            <img src="img/t4-1-128.png" alt="icon-square" width="50px" height="55px">
+            <h1 style=" margin-left: 10px;">T4Student<br></h1>  
+                                               
+              <a id="menu-icon" class="menu-icon" onclick="onMenuClick()">
+                <i class="fa fa-bars"></i>
+              </a>
+        
+              <div id="navigation-bar" class="nav-bar">               
+                <a href="/page1quiz-stu">Quiz</a>
+                <a href="/profile-stu">Profile</a>              
+                <a href="/" id="singout" >sing out</a>
+              </div>   
+        
+       
+              
+        </div>
+
+    </section>
+    <script src="js/page1-1.js"></script>
+    <script src="jssingout.js"></script>
+
+    </div>
+    
+</head>
+
+<body>
+
+  <main class="form-page w-100 m-auto" >
+      <form action="/page1serach-stu" method="post">
+        <div style="display: flex; gap: 10px;"> 
+        <h1 class="h3 mb-3 fw-normal" style=" font-size: 30px;font: bolder; margin-left: 10px;">Search</h1>
+        <img src="img/search-engine-icon.svg" alt="Search" width="50px" height="55px">
+        </div>
+    <br>
+        <div class="form-floating">
+          <input type="name" class="form-control" id="nameteacher" name="fname" placeholder="name Teacher">
+          <label for="name">Name Teacher</label>
+        </div><br>
+        <div class="form-floating">
+          <input type="name" class="form-control" id="namecourse" name="course" placeholder="Name Course">
+          <label for="namecourse">Name course</label>
+        </div><br>
+
+
+              
+          <label for="">Type Quiz</label>
+        <br>
+        <div class="form-check radios">
+          <input type="radio" class="form-check-input" id="midterm" name="quizType" value="midterm" checked>
+          <label class="form-check-label" for="Midterm">Midterm</label>
+        </div> 
+        <div class="form-check radios">
+          <input type="radio" class="form-check-input" id="final" name="quizType" value="final">
+          <label class="form-check-label" for="final">Final</label>
+        </div> 
+        <br> 
+        
+
+
+        
+        <button class="btn btn-primary w-100 py-2" type="submit">GO TO QUIZ</button>                    
+  
+        
+        
+        <p class="mt-5 mb-3 text-body-secondary">©2024</p>
+      </form>
+      
+    </main>
+  
+   
+</body>
+
+
+
+
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha2/dist/css/bootstrap.min.css" rel="stylesheet"
+integrity="sha384-aFq/bzH65dt+w6FI2ooMVUpc+21e0SRygnTpmBvdBgSdnuTN7QbdgL+OapgHtvPp" crossorigin="anonymous">
+<link href="style/page1-1stu.css" rel="stylesheet" > 

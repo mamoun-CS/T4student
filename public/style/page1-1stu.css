@@ -1,0 +1,131 @@
+.gradient-background {
+    background: linear-gradient(300deg, #ef8172,#ff4c69, #00bfff );
+    background-size: 180% 180%;
+    animation: gradient-animation 18s ease infinite;
+   
+  }
+  .nav-bar :active
+  {   
+    color: black;
+  }
+
+  .form-page {
+    width: 100%;
+    max-width: 400px; 
+    padding: 50px 5px; 
+    box-shadow: 0 4px 8px rgb(199, 91, 91); 
+        display: flex;
+        justify-content: center; 
+        align-items: center; 
+       transform: translateY(30%);
+      
+  }
+  .radios
+  {
+    margin :2%;
+  }
+
+
+
+
+
+
+
+  
+  :root {
+    --bgcolor: #1a79cf;
+    
+  }
+  
+  * {
+    margin: 0;
+    padding: 0;
+  }
+  
+  .page-header {
+    background-color: var(--bgcolor);
+    padding: 1.3rem;
+    display: flex;
+    justify-content: space-between;
+  }
+  .logo {
+    color: white;
+    align-self: center;
+    margin-left: 1.2rem;
+    font-size: 2.5rem;
+  }
+  
+
+
+
+
+
+  .nav-bar {
+    margin: auto;
+     z-index: 1;
+  }
+  
+  .nav-bar a {
+    color: rgb(246, 239, 239);
+    padding: 1.5rem;
+    cursor: pointer;
+    text-decoration: none;
+    font-size: 1.2rem;
+    overflow: hidden;
+    
+   
+  }
+  
+  .menu-icon {
+    color: rgb(245, 240, 240);
+    cursor: pointer;
+    display: none;
+    position: absolute;
+    top: 10px;
+    right: 20px;
+    font-size: 20px;
+    z-index: 1;
+  }
+  
+  button {
+    font-size: 1rem;
+    border: 1px solid black;
+    border-radius: 5px;
+    padding: 0.9rem;
+  }
+  @media screen and (max-width: 750px) {
+    
+    .nav-bar {
+      display: none;
+      position: absolute;
+      top: 3.7rem;
+      right: 1%;
+      width: 50%;
+      background-color: var(--bgcolor);
+      background: linear-gradient(300deg, #ef8172,#ff4c69, #00bfff );
+      text-align:center;
+      
+      
+    }
+  
+    .nav-bar.responsive {
+      display: block;
+    }
+  
+    .nav-bar a {
+      display: block;
+    }
+  
+    .menu-icon {
+      display: block;
+      
+    }
+  
+    button {
+      padding: 0.4rem;
+    }
+    .logo {
+      font-size: 1.4rem;
+    }
+  }
+    

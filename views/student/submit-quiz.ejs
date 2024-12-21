@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>T4Student-Search</title>
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css"
+    />
+    <div class="gradient-background">
+      <section id="titel" class="gradient-background" style="position:static;">
+          <div style="display:flex; align-items: center;">
+              
+              <img src="img/t4-1-128.png" alt="icon-square" width="50px" height="55px">
+              <h1 style=" margin-left: 10px;">T4Student<br></h1>  
+                                                 
+                <a id="menu-icon" class="menu-icon" onclick="onMenuClick()">
+                  <i class="fa fa-bars"></i>
+                </a>
+          
+                <div id="navigation-bar" class="nav-bar">               
+                  <a href="/page1quiz-stu">Quiz</a>
+                  <a href="/profile-stu">Profile</a>              
+                  <a href="/" id="singout" >sing out</a>
+                </div>   
+          
+         
+                
+          </div>
+  
+      </section>
+      <script src="js/page1-1.js"></script>
+      <script src="jssingout.js"></script>
+      </div>
+
+</head>
+   <body>
+
+    <main class="form-page w-100 m-auto">
+        <form action="/submitquize-stu" method="POST">
+          <div style="display: flex; gap: 10px; text-align: center;"> 
+          <h1 class="h3 mb-3 fw-normal" style=" font-size: 50px;font: bolder; margin-left: 15px; font-style:oblique; text-align: center;">Quiz</h1>
+         <% if( locals.avg >= 60 ) { %> 
+          <img src="img/smile.svg" alt="Quiz" width="50px" height="50px">
+         <% } else { %>
+            <img src="img/sad.svg" alt="Quiz" width="50px" height="50px">
+            <% } %>
+          </div>
+          <br>
+          <input type="hidden" id="score" name="score" value='<%= JSON.stringify(listdata) %>' />
+          <label type="hidden" name="id_q" value="<%= locals.id_q %>" ></label>
+          <% let formattedAvg = parseFloat(locals.avg).toFixed(1); %>
+        <% if (formattedAvg >= 60){%>
+         <label for="namecourse" name="avg" class="avgs"> <%= formattedAvg %> %</label>
+         <% }else {%>
+          <label for="namecourse" name="avg" class="avgf"> <%= formattedAvg %>% </label>
+         <%}%><br><br>
+          <label for="aboutquiz">about Quiz:-</label>
+          <h5>data about quize </h5>
+          <br><hr>
+      <button class="btn btn-primary w-100 py-2" type="submit">Review Invalid Answers</button>
+          <p class="mt-50 mb-3 text-body-secondary">©2024</p>
+        </form>
+        
+      </main>
+   
+</body>
+
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha2/dist/css/bootstrap.min.css" rel="stylesheet"
+integrity="sha384-aFq/bzH65dt+w6FI2ooMVUpc+21e0SRygnTpmBvdBgSdnuTN7QbdgL+OapgHtvPp" crossorigin="anonymous">
+<link href="style/page1-1stu.css" rel="stylesheet" > 
+<link href="style/answer.css" rel="stylesheet">
