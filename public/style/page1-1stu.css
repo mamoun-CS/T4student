@@ -4,6 +4,22 @@
     animation: gradient-animation 18s ease infinite;
    
   }
+  
+  .form-signin {
+    width: 100%;
+    max-width: 400px; 
+    padding: 50px 5px; 
+    box-shadow:0 4px 8px rgb(199, 91, 91); 
+        display: flex;
+        justify-content: center; 
+        align-items: center; 
+       transform: translateY(30%);
+      
+  }
+  .radios
+  {
+    margin :2%;
+  }
   .nav-bar :active
   {   
     color: black;

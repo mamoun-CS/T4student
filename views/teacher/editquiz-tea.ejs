@@ -21,7 +21,8 @@
                     
                     <div id="navigation-bar" class="nav-bar">       
                        <a href="/profile-tec">profile</a>
-                      <a href="/createquiz-tec">Create Quiz</a>             
+                      <a href="/createquiz-tec">Create Quiz</a>  
+                      <a href="/about-quiz">about Quizes</a>           
                       <a href="/" id="singout" >sing out </a>
                 </div>   
          
@@ -30,7 +31,7 @@
   
       </section>
       <script src="js/page1-1.js"></script>
-      <script src="jssingout.js"></script>
+      <script src="js/sing-out.js"></script>
   
       </div>
 </head>
@@ -57,7 +58,7 @@
                    
                    <% for(let i=0 ; i < list.length ; i++)  {%>
                         <tr onclick="submitForm('<%= list[i].id_q %>')">
-                            <td><%= list[i].id_q %></td>
+                            <td><%= i+1 %></td>
                             <td><%= list[i].fname + ' ' + list[i].lname %></td>
                             <td><%= list[i].major %></td>
                             <td><%= list[i].course %></td>

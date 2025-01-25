@@ -40,3 +40,8 @@
     font-size: 15vh;
     color: rgb(150, 27, 27);
   }
+  #id
+  {
+  max-width: 50%;
+  min-width: 50%;
+  }

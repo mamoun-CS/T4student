@@ -31,7 +31,7 @@
   
       </section>
       <script src="js/page1-1.js"></script>
-      <script src="jssingout.js"></script>
+      <script src="js/sing-out.js"></script>
       </div>
 
 </head>
@@ -53,12 +53,12 @@
           <% let formattedAvg = parseFloat(locals.avg).toFixed(1); %>
         <% if (formattedAvg >= 60){%>
          <label for="namecourse" name="avg" class="avgs"> <%= formattedAvg %> %</label>
+          <br><hr>
          <% }else {%>
           <label for="namecourse" name="avg" class="avgf"> <%= formattedAvg %>% </label>
-         <%}%><br><br>
-          <label for="aboutquiz">about Quiz:-</label>
-          <h5>data about quize </h5>
           <br><hr>
+          <%}%><br><br>
+          
       <button class="btn btn-primary w-100 py-2" type="submit">Review Invalid Answers</button>
           <p class="mt-50 mb-3 text-body-secondary">©2024</p>
         </form>

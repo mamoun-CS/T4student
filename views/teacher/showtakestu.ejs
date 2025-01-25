@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>T4Student-Search</title>
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css"
+    />
+    <div class="gradient-background">
+      <section id="titel" class="gradient-background" style="position:static;">
+          <div style="display:flex; align-items: center;">
+              
+              <img src="img/t4-1-128.png" alt="icon-square" width="50px" height="55px">
+              <h1 style=" margin-left: 10px;">T4Student<br></h1>  
+                                                 
+                <a id="menu-icon" class="menu-icon" onclick="onMenuClick()">
+                  <i class="fa fa-bars"></i>
+                </a>
+          
+                <div id="navigation-bar" class="nav-bar">       
+                    <a href="/profile-tec">profile</a>
+                   <a href="/createquiz-tec">Create Quiz</a>  
+                   <a href="/editquiz-tec">Edit Quiz</a>              
+                   <a href="/" id="singout" >sing out </a>
+
+             </div>   
+          
+         
+                
+          </div>
+  
+      </section>
+      <script src="js/page1-1.js"></script>
+      <script src="js/sing-out.js"></script>
+  
+      </div>
+      
+  </head>
+  <body>
+   
+    <section class="form">
+    <form action="/take-quiz-stu" method="post">
+      <% if (locals.listdata) { %>
+        <% for (let i = 0; i < listdata.length; i++) { %>
+            <h2>Q<%=i+1%>: <%= listdata[i].Q %></h2>
+           <%if (listdata[i].valid == 'correct answer'){ %>
+            <h3 style="color:rgb(5, 100, 5);"> <%= listdata[i].valid %></h3>
+            <% }else {%>
+            <h3 style="color: red; "><%=listdata[i].valid %></h3>
+            <% }%>
+            <% if (listdata[i].imgq) { %>
+                <img src="<%= listdata[i].imgq %>" alt="Question Image"  id = 'img'>
+            <% } %>
+            <br>
+             <% if (1 == listdata[i].cop && locals.show) { %>
+              <div class="form-check radios" id="ans"> 
+            <% } else if (1 == listdata[i].yourc && locals.show) { %>
+              <div class="form-check radios" id="dis">
+            <% } else { %>
+              <div class="form-check radios" id="op1"> <% } %>    
+              <input type="radio" class="form-check-input" id="op1<%= i %>" name="quizType<%=i%>" value="1" >
+              <label class="form-check-label" for="op1<%= i %>">a: <%= listdata[i].op1 %></label>
+            <% if (listdata[i].imgop1) { %>
+                <img src="<%= listdata[i].imgop1 %>" alt="Option 1 Image"  id = 'img'>
+            <% } %>
+           </div> 
+           <br>
+           <% if (2 == listdata[i].cop && locals.show) { %>
+            <div class="form-check radios" id="ans"> 
+          <% } else if (2 == listdata[i].yourc && locals.show) { %>
+            <div class="form-check radios" id="dis">
+          <% } else { %>
+            <div class="form-check radios" id="op2"> <% } %>    <input type="radio" class="form-check-input" id="op2<%= i %>" name="quizType<%=i%>" value="2" >
+           <label class="form-check-label" for="op2<%= i %>">b: <%= listdata[i].op2 %></label>
+            <% if (listdata[i].imgop2) { %>
+                <img src="<%= listdata[i].imgop2 %>" alt="Option 2 Image" id = 'img' >
+            <% } %>
+            </div><br>
+            <% if (3 == listdata[i].cop && locals.show) { %>
+              <div class="form-check radios" id="ans"> 
+            <% } else if (3 == listdata[i].yourc && locals.show) { %>
+              <div class="form-check radios" id="dis">
+            <% } else { %>
+              <div class="form-check radios" id="op3"> <% } %>     <input type="radio" class="form-check-input" id="op3<%= i %>" name="quizType<%=i%>" value="3" >
+              <label class="form-check-label" for="op3<%= i %>">c: <%= listdata[i].op3 %></label>
+            <% if (listdata[i].imgop3 ) { %>
+                <img src="<%= listdata[i].imgop3 %>" alt="Option 3 Image"  id = 'img' >
+            <% } %></div><br>
+            <% if (4 == listdata[i].cop && locals.show) { %>
+              <div class="form-check radios" id="ans"> 
+            <% } else if (4 == listdata[i].yourc && locals.show) { %>
+              <div class="form-check radios" id="dis">
+            <% } else { %>
+              <div class="form-check radios" id="op4"> <% } %><input type="radio" class="form-check-input" id="op4<%= i %>" name="quizType<%=i%>" value="4">
+            <label class="form-check-label" for="op4<%= i %>">d: <%= listdata[i].op4 %></label>
+        
+            <% if (listdata[i].imgop4 ) { %>
+                <img src="<%= listdata[i].imgop4 %>" alt="Option 4 Image" id = 'img'>
+            <% } %></div><br>
+            <br><hr>
+        <% } %>
+    <% } %>
+    
+    </section>
+
+
+
+</form>
+</body>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha2/dist/css/bootstrap.min.css" rel="stylesheet"
+integrity="sha384-aFq/bzH65dt+w6FI2ooMVUpc+21e0SRygnTpmBvdBgSdnuTN7QbdgL+OapgHtvPp" crossorigin="anonymous">
+<link href="style/page1-1stu.css" rel="stylesheet" > 
+<link href="style/answer.css" rel="stylesheet">
+
+
+
+
+

@@ -31,37 +31,50 @@
   
       </section>
       <script src="js/page1-1.js"></script>
-      <script src="jssingout.js"></script>
+      <script src="js/sing-out.js"></script>
   
       </div>
       
   </head>
   <body>
-   
+    <form action="/AI-Assist" method="get">
+      <% if(locals.show){%>  
+       
+        <div class="timer-box" id="timer-box" >
+          <br>
+          <button type="submit" name="submit" id="AI-assist" class="btn btn-primary w-100 py-2" value="<%= listdata %>">Go to AI-assist</button>
+         <label id="l1" name="l1" value="<%= avg %>"></label>
+        </div>
+      <%}%>
+      </form>
     <section class="form">
     <form action="/take-quiz-stu" method="post">
+      <% let data_Ai = []; %>
+    <% let j = 0; %>
       <% if (locals.listdata) { %>
         <% for (let i = 0; i < listdata.length; i++) { %>
-            <h2>Q: <%= listdata[i].Q %></h2>
+            <h2>Q<%=i+1%>: <%= listdata[i].Q %></h2>
            <%if (listdata[i].valid == 'correct answer'){ %>
             <h3 style="color:rgb(5, 100, 5);"> <%= listdata[i].valid %></h3>
-            <% }else {%>
+            <% } else{ %>
             <h3 style="color: red; "><%=listdata[i].valid %></h3>
-            <% }%>
+            <%= data_Ai.push(listdata[i]); %>
+            <%  }%>
+
             <% if (listdata[i].imgq) { %>
-                <img src="<%= listdata[i].imgq %>" alt="Question Image"width="100%" height="100%">
+                <img src="<%= listdata[i].imgq %>" alt="Question Image"  id = 'img'>
             <% } %>
             <br>
              <% if (1 == listdata[i].cop && locals.show) { %>
-              <div class="form-check radios" id="ans"> 
+              <div class="form-check radios" id="ans">
             <% } else if (1 == listdata[i].yourc && locals.show) { %>
               <div class="form-check radios" id="dis">
             <% } else { %>
               <div class="form-check radios" id="op1"> <% } %>    
-              <input type="radio" class="form-check-input" id="op1" name="quizType<%=i%>" value="1" checked>
-              <label class="form-check-label" for="op1">a: <%= listdata[i].op1 %></label>
+              <input type="radio" class="form-check-input" id="op1<%= i %>" name="quizType<%=i%>" value="1" >
+              <label class="form-check-label" for="op1<%= i %>">a: <%= listdata[i].op1 %></label>
             <% if (listdata[i].imgop1) { %>
-                <img src="<%= listdata[i].imgop1 %>" alt="Option 1 Image" width="50%" height="70%">
+                <img src="<%= listdata[i].imgop1 %>" alt="Option 1 Image"  id = 'img'>
             <% } %>
            </div> 
            <br>
@@ -70,10 +83,10 @@
           <% } else if (2 == listdata[i].yourc && locals.show) { %>
             <div class="form-check radios" id="dis">
           <% } else { %>
-            <div class="form-check radios" id="op2"> <% } %>    <input type="radio" class="form-check-input" id="op2" name="quizType<%=i%>" value="2" >
-           <label class="form-check-label" for="op2">b: <%= listdata[i].op2 %></label>
+            <div class="form-check radios" id="op2"> <% } %>    <input type="radio" class="form-check-input" id="op2<%= i %>" name="quizType<%=i%>" value="2" >
+           <label class="form-check-label" for="op2<%= i %>">b: <%= listdata[i].op2 %></label>
             <% if (listdata[i].imgop2) { %>
-                <img src="<%= listdata[i].imgop2 %>" alt="Option 2 Image" width="50%" height="30%">
+                <img src="<%= listdata[i].imgop2 %>" alt="Option 2 Image" id = 'img' >
             <% } %>
             </div><br>
             <% if (3 == listdata[i].cop && locals.show) { %>
@@ -81,35 +94,33 @@
             <% } else if (3 == listdata[i].yourc && locals.show) { %>
               <div class="form-check radios" id="dis">
             <% } else { %>
-              <div class="form-check radios" id="op3"> <% } %>     <input type="radio" class="form-check-input" id="op3" name="quizType<%=i%>" value="3" >
-              <label class="form-check-label" for="op3">c: <%= listdata[i].op3 %></label>
+              <div class="form-check radios" id="op3"> <% } %>     <input type="radio" class="form-check-input" id="op3<%= i %>" name="quizType<%=i%>" value="3" >
+              <label class="form-check-label" for="op3<%= i %>">c: <%= listdata[i].op3 %></label>
             <% if (listdata[i].imgop3 ) { %>
-                <img src="<%= listdata[i].imgop3 %>" alt="Option 3 Image" width="50%" height="50%">
+                <img src="<%= listdata[i].imgop3 %>" alt="Option 3 Image"  id = 'img' >
             <% } %></div><br>
             <% if (4 == listdata[i].cop && locals.show) { %>
               <div class="form-check radios" id="ans"> 
             <% } else if (4 == listdata[i].yourc && locals.show) { %>
               <div class="form-check radios" id="dis">
             <% } else { %>
-              <div class="form-check radios" id="op4"> <% } %>    <input type="radio" class="form-check-input" id="op4" name="quizType<%=i%>" value="4">
-            <label class="form-check-label" for="op4">d: <%= listdata[i].op4 %></label>
+              <div class="form-check radios" id="op4"> <% } %><input type="radio" class="form-check-input" id="op4<%= i %>" name="quizType<%=i%>" value="4">
+            <label class="form-check-label" for="op4<%= i %>">d: <%= listdata[i].op4 %></label>
         
             <% if (listdata[i].imgop4 ) { %>
-                <img src="<%= listdata[i].imgop4 %>" alt="Option 4 Image"width="50%" height="30%">
+                <img src="<%= listdata[i].imgop4 %>" alt="Option 4 Image" id = 'img'>
             <% } %></div><br>
             <br><hr>
         <% } %>
     <% } %>
-    
+    <!--<input type="hidden" style="display: none;" name="data_Ai" value='<%= JSON.stringify(data_Ai) %>'> -->
     </section>
-    <% if(locals.show){ %>
-      <%}else{%>
-    <div class="timer-box" id="timer-box" >
-      <span id="timer" name="time" value="time"></span><br>
-      <button type="submit" name="submit" id="submit"class="btn btn-primary w-100 py-2" value="<%= id_q %>">Submit</button>
-    </div>
-<%}%>
-
+    <% if(!locals.show){ %>
+      <div class="timer-box" id="timer-box" >
+        <span id="timer" name="time" value="time"></span><br>
+        <button type="submit" name="submit" id="submit"class="btn btn-primary w-100 py-2" value="<%= id_q %>">Submit</button>
+      </div>
+    <% } %>
 
 <script>
   
@@ -132,7 +143,7 @@
         alert("Time's up! Submitting the quiz automatically.");
         document.getElementById("submit").click(); // Automatically submit the form
       }
-
+       
       remainingTime--;
     }, 1000);
   }
@@ -141,6 +152,7 @@
   window.onload = startTimer;
 </script>
 </form>
+ 
 </body>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">

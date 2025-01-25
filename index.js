@@ -8,8 +8,7 @@ import { Strategy } from "passport-local";
 import env from "dotenv";
 import multer from "multer";
 import path from "path";
-import e from "express";
-import { randomInt } from "crypto";
+import nodemailer from "nodemailer";
 
 const saltRound = 3;
 const app = express();
@@ -17,14 +16,43 @@ env.config();
 
 const storage = multer.diskStorage({
     destination: (req, file, cb) => {
-        cb(null, "public/img/Q"); // Directory to save uploaded files
+        cb(null, "public/img/Q"); 
     },
     filename: (req, file, cb) => {
         console.log(file);
-        cb(null, Date.now() + path.extname(file.originalname)); // Create a unique filename
+        cb(null, Date.now() + path.extname(file.originalname)); 
     }
 });
 const upload = multer({ storage:storage });
+
+const transporter = nodemailer.createTransport({
+    service: 'gmail', 
+    auth: {
+      user: process.env.EMAIL_USER, 
+      pass: process.env.EMAIL_PASS
+    }
+  });
+
+// Send email function
+const sendVerificationEmail = async (toEmail, verificationCode) => {
+    try {
+      const info = await transporter.sendMail({
+        from: '"T4Student" ', 
+        to: toEmail,
+        subject: 'Email Verification', 
+        text: `Your verification code is: ${verificationCode}`, 
+      });
+  
+      console.log('Email sent: %s', info.messageId);
+      return true;
+    } catch (error) {
+      console.error('Error sending email:', error);
+      return false;
+    }
+  };
+  export default sendVerificationEmail;
+
+
 
 
 const db = new pg.Client({
@@ -38,15 +66,24 @@ db.connect()
   
 app.use(
     session({
-        id_q:0,
-        mid_final:0,
-        t:0,
+        verify:'0',
+        id_q:'0',
+        sec:'0',
+        mid_final:'0',
         numberq :'0',
         user :"name , email",
+        cuser :"fname,lname , email,id_student,hash,cv_doc",
         listdata:"",
+        avg:'0',
+        flag :'0',
+        data_Ai:"Q , imgq ",
+        lis:"",
+        h: 0 ,
+        data3:"",
 secret: process.env.BOSS_CLICK,
 resave: false , 
 saveUninitialized: true,
+ cookie: {  maxAge: 1000 * 60 * 60, },
 }));
 
 app.use(passport.initialize());
@@ -56,7 +93,13 @@ app.use(express.json());
 
 app.use(express.static("public")); 
 app.use(express.urlencoded({ extended: true }));
-app.use(bodyParser.urlencoded({ extended: true })); // For parsing form data
+app.use(bodyParser.urlencoded({ extended: true })); 
+
+
+
+
+
+
 // Define routes
 
 app.get("/sing-in", (req, res) => {
@@ -85,10 +128,40 @@ app.post("/sing-in", (req, res, next) => {
                 req.session.user={fname: user.fname.trimEnd(),lname:user.lname.trimEnd(), email :user.email};
                 return res.redirect(`/profile-tec`); // Redirect teachers
             }
+            else if (info.state === "ver")
+                {
+                    let s = 'T'
+                    req.session.user={fname: user.fname.trimEnd(),lname:user.lname.trimEnd(), email :user.email,state : s };
+                    return res.redirect(`/verify`); 
+                }
         });
     })(req, res, next);
 });
-
+app.post("/sing-out",async (req, res) => {
+    const now = Date.now();
+    const rtime = Math.ceil((3600000 - (now - req.session.now)) / 1000);
+    if ( rtime >0 )
+        {
+    const stu = await db.query(
+        "UPDATE student SET lasttry = $2 WHERE email = $1;",
+        [req.session.user.email, req.session.now]
+      );
+    }
+    else {
+        const stu = await db.query(
+            "UPDATE student SET lasttry = $2 WHERE email = $1;",
+            [req.session.user.email, 0]
+          );
+    }
+    req.session.destroy((err) => {
+      if (err) {
+        console.error("Error destroying session:", err);
+      }
+     
+      console.log(req.session);
+     res.redirect('/sing-in');
+    });
+  });
 
 
 
@@ -130,32 +203,53 @@ app.post("/sing-up",async (req, res) => {
                 { console.log("error in password \n ");}
            else
            {
-                const checkresultstu = await db.query("SELECT * FROM student WHERE email = $1",[email],); 
-                const checkresulttea = await db.query("SELECT * FROM teacher WHERE email = $1",[email],); 
-            if (checkresultstu.rows.length > 0   && checkresulttea.rows.length > 0)
+            const [checkresultstu, checkresulttea, checkresulttea_ver] = await Promise.all([
+                db.query("SELECT * FROM student WHERE email = $1", [email]),
+                db.query("SELECT * FROM teacher WHERE email = $1", [email]),
+                db.query("SELECT * FROM teacher_ver WHERE email = $1", [email])
+            ]);
+
+             if ( checkresultstu.rows.length > 0   || checkresulttea.rows.length > 0 || checkresulttea_ver.rows.length > 0 )
                 {
                     res.render("start/sing-up.ejs", { 
                         validpas: "invaled Email please change Email." 
                     });
                 }
           else{
+           
             if (state === 'T')
                 {
-                    const result = await db.query(
-                    "INSERT INTO teacher(fname, lname, email,  password,cv_doctor) VALUES ($1, $2, $3, $4,$5)",
-                    [fname, lname, email, hash,cv_doc]
+                    const ver = Math.floor(100000 + Math.random() * 900000).toString();
+              
+                    const checkresulttea = await db.query("SELECT * FROM teacher WHERE email = $1",[email],); 
+                    const checkresulttea_ver = await db.query("SELECT * FROM teacher_ver WHERE email = $1",[email],); 
+
+
+                   const result = await db.query(
+                    "INSERT INTO teacher_ver(fname, lname, email,  password,cv_doc,ver) VALUES ($1, $2, $3, $4,$5,$6)",
+                    [fname, lname, email, hash,cv_doc,ver]
                  );
-    
-                }
-            else {
-                  const result = await db.query(
-            "INSERT INTO student(fname, lname, email,password,id_student) VALUES ($1, $2, $3, $4,$5)",
-            [fname, lname, email, hash,id_student]
-         );
-        console.log(result); 
+                 const verificationCode = cv_doc +"/n email =" +email + "/n verify code : "+ver ;
+                 const emailSent = await sendVerificationEmail(process.env.EMAIL_USER, verificationCode);
+                 console.log(emailSent);
+                res.redirect("/sing-in");
             }
-        res.render("start/sing-in.ejs"); 
+            else { 
+                const verificationCode = Math.floor(100000 + Math.random() * 900000).toString();
+                req.session.verify = verificationCode;
+                const emailSent = await sendVerificationEmail(email, verificationCode);
+                console.log(emailSent);
+           req.session.cuser = {
+            fname: fname,
+            lname: lname,
+            email: email,
+            id_student: id_student,
+            hash: hash,
+          }; 
+          res.redirect(`/verify`);
          }
+         
+        }
 
         }
         });
@@ -163,7 +257,70 @@ app.post("/sing-up",async (req, res) => {
      
      }
 });
-
+app.get("/verify",(req,res)=>
+    {
+        const  valid  = req.query.valid ;
+        res.render("start/verify-code.ejs", {
+          valid,
+        });
+    });
+ app.post("/verify",async(req,res)=>
+    {
+       const state = req.session.user.state ||0 ; 
+       const email = req.session.user.email ||0 ; 
+       console.log(state , email );
+       const code = req.body.code; 
+        if (state === 'T'){
+            const result_ver = await db.query("SELECT * FROM teacher_ver WHERE email = $1",[email]);
+            console.log(code);
+            const codeStr = String(code);
+            const rr = String(result_ver.rows[0].ver);
+            if (rr === codeStr ){
+            const result = await db.query(
+                "INSERT INTO teacher(fname, lname, email, password, cv_doctor) VALUES ($1, $2, $3, $4, $5)",
+                [result_ver.rows[0].fname, result_ver.rows[0].lname, result_ver.rows[0].email, result_ver.rows[0].password, result_ver.rows[0].cv_doc]
+              );
+              const result_delete_ver = await db.query("DELETE FROM teacher_ver WHERE email= $1",[email]);
+            
+              req.session.user.fname= result_ver.rows[0].fname;
+              req.session.user.lname= result_ver.rows[0].lname;
+              req.session.user.email= result_ver.rows[0].email;
+              res.redirect("profile-tec");
+            }
+            else {
+                let s = state ; 
+                let email = result_ver.rows[0].email; 
+                return res.redirect(`/verify?email=${email}&state=${s}&valid=code+is+not+correct+please+try+again`);
+             }
+            } else {
+    
+        const {fname , lname , email , hash , id_student} = req.session.cuser||0;
+        let codev = req.session.verify;
+        console.log(req.session.cuser , code,codev);
+        console.log(code );
+        console.log(code === codev);
+        if (code === codev)
+        {
+            console.log('correct code verify');
+            try {
+                const result = await db.query(
+                  "INSERT INTO student(fname, lname, email, password, id_student) VALUES ($1, $2, $3, $4, $5)",
+                  [fname, lname, email, hash, id_student]
+                );
+                res.redirect("/sing-in");
+            }catch (error) {
+                console.error("Database Error:", error);
+                res.redirect("/sing-in",{
+                    valid:"There was an error with the database. Please try again."
+                });
+               
+              }
+        }
+        else {
+            res.redirect(`/verify?fname=${fname}&lname=${lname}&email=${email}&hash=${hash}&id_student=${id_student}&valid=code+is+not+correct+please+try+again`);
+        }
+    }
+    });   
 
 app.get("/", (req, res) => {
     res.render("start/home.ejs"); 
@@ -286,10 +443,10 @@ op1: row.choise1,
 op2: row.choise2,
 op3: row.choise3,
 op4: row.choise4,
-imgop1: row.op1,
-imgop2: row.op2,
-imgop3: row.op3,
-imgop4: row.op4,
+imgop1: row.imageop1,
+imgop2: row.imageop2,
+imgop3: row.imageop3,
+imgop4: row.imageop4,
 cop: row.true_c,
 numstr: index + 1, // Assign a sequence number starting from 1
 yourc : 0
@@ -325,7 +482,13 @@ app.post("/take-quiz-stu",async (req,res)=> {
         [submit]
     );time++;}
       let avg =0 ; 
-const listdata = quize.rows.map((row, index) => ({  Q: row.qustion,imgq: row.imagequstion,op1: row.choise1,        op2: row.choise2,        op3: row.choise3,        op4: row.choise4,        imgop1: row.op1,        imgop2: row.op2,        imgop3: row.op3,        imgop4: row.op4,        cop: row.true_c,
+const listdata = quize.rows.map((row, index) => ({ 
+     Q: row.qustion,imgq: row.imagequstion,op1: row.choise1,    
+         op2: row.choise2,        op3: row.choise3,      
+           op4: row.choise4,        imgop1: row.imageop1,    
+               imgop2: row.imageop2,        imgop3: row.imageop3,  
+                     imgop4: row.imageop4,   
+                          cop: row.true_c,
         numstr: index + 1, valid:'data'
                    }));
    for(let i =0 ; i<quize.rowCount; i++ )
@@ -358,13 +521,30 @@ const listdata = quize.rows.map((row, index) => ({  Q: row.qustion,imgq: row.ima
              WHERE email = $1`, 
             [email, avg.toFixed(1)]
         );
-    
+        let chose = ""; 
+        for (let i = 0; i < listdata.length; i++) {
+            if (typeof listdata[i].yourc === "undefined") {
+                chose = chose + '0';
+            } else {
+                chose = chose + listdata[i].yourc;
+            }
+        }
+        console.log("this is new line");
+        console.log(chose,submit);
+        const add = await db.query(
+            "INSERT INTO student_qustion(email , id_q ,score ,stu_chose) VALUES ($1,$2,$3,$4)",
+            [email , submit ,avg.toFixed(1) ,chose]
+        );
+
         console.log("Rows updated:", count.rowCount);
         
+       // console.log("data AI :",JSON.parse(req.body.data_Ai));
+             req.session.listdata = listdata;
+             req.session.avg= avg.toFixed(1);
+           //  req.session.data_Ai = JSON.parse(req.body.data_Ai); 
+        console.log('ok');
+        res.redirect(`/submitquize-stu?id_q=${submit }`);
 
-
-        const listdataString = encodeURIComponent(JSON.stringify(listdata));
-        res.redirect(`/submitquize-stu?listdata=${listdataString}&avg=${avg}&id_q=${submit}`);
      
    });
 //-----------------------------------------------------------
@@ -380,26 +560,44 @@ app.get("/page1Serach-stu" , (req ,res)=>
         else  {res.redirect("/sing-in");}
        
     });
-app.post("/page1serach-stu" , async(req,res)=>{
+app.post("/page1Serach-stu" , async(req,res)=>{
     console.log('enter to post page 1 search ');
  const fname = req.body.fname; 
- const course = req.body.course; 
+ const course = req.body.course ? req.body.course.trim() : null;
  const type = req.body.quizType;
  console.log(fname , course ,type);
- const quize = await db.query(
+ let quize;
+
+ try {
+if (!course){
+    quize = await db.query(
+        "SELECT * FROM quize WHERE fname = $1 AND mid_final=$2;",
+      [fname  , type ]
+        );
+}
+else if (!fname){
+    quize = await db.query(
+    "SELECT * FROM quize WHERE course=$1 AND mid_final=$2;",
+  [ course , type ]
+    );}
+else{
+  quize = await db.query(
     "SELECT * FROM quize WHERE fname = $1 AND course=$2 AND mid_final=$3;",
   [fname , course , type ]
     );
-   
-    const listdataString = encodeURIComponent(JSON.stringify(quize.rows));
-   res.redirect(`/pagetablesearch?list=${listdataString}`);
-   
+}
+    req.session.lis = quize.rows;
+    res.redirect(`/pagetableSearch`);
+   } catch (error) {
+        console.error("Error querying the database:", error);
+        res.status(500).send("Internal Server Error");
+    }
 
    });
 app.get('/pagetablesearch',(req,res)=>{
     if (req.isAuthenticated())
         {    
-    const listdata = JSON.parse(decodeURIComponent(req.query.list));
+    const listdata = req.session.lis;
     console.log(listdata);
     res.render("student/pagesearch.ejs",{
         list : listdata,
@@ -419,51 +617,297 @@ const quize = await db.query(
     res.redirect(`/take-quiz-stu?id_q=${id_q}&type=${quize.rows[0].mid_final}`);
 });
 
-app.get("/submitquize-stu",(req,res)=>{
+app.get("/submitquize-stu",async(req,res)=>{
     console.log("enter get submit quiz stu");
     if (req.isAuthenticated())
         {    
-    try {
-        const avg = req.query.avg || 0 ;
-        const listdata = JSON.parse(decodeURIComponent(req.query.listdata));
+      
+        const avg = req.session.avg;
+        const listdata = req.session.listdata;
         const id_q = req.query.id_q;
-
-        console.log("List Data:", listdata);
+        req.session.id_q = id_q ; 
+        console.log("List Data:", avg,listdata);
+       
         res.render("student/submit-quiz.ejs", {
             avg: avg,
             listdata: listdata, // Pass as-is for rendering
             id_q: id_q,
         });
-    } catch (error) {
-        console.error("Error in GET /submitquize-stu:", error.message);
-        res.status(500).send("Server Error");
-    }
+   
 }else {res.redirect("/sing-in");}
 });
 
-app.post("/submitquize-stu", (req, res) => {
-    console.log("Incoming data:", req.body);
+app.post("/submitquize-stu", async(req, res) => {
+    console.log("Incoming data:", req.query);
         const listdata = JSON.parse(req.body.score); // Parse the JSON string
-        const id_q = req.body.id_q; // Access the value
-        console.log("List Data:", listdata);
-        console.log("ID:", id_q);
+        const id_q = req.query.id_q; // Access the value
         
-
-
-
-
+        console.log("List Data:", listdata);
+        console.log("avg:", id_q, req.session.avg );
 
         res.render("student/take-quize-stu.ejs", { 
             listdata: listdata,
             id_q: id_q,
             show :1 ,
+            avg :req.session.avg,
         });
     
 });
 
+app.get('/AI-Assist', async(req,res)=>{
+    console.log("enter AI-Assist");
+     if (req.isAuthenticated())
+        {  
+            const now = Date.now();
+
+       const timeResult = await db.query(
+        "SELECT * FROM student WHERE email = $1;",
+      [req.session.user.email]
+        );  
+        const time = timeResult.rows[0];
+        let h = req.session.h||0;
+        const r1time = Math.ceil((3600000 - (now -time.lasttry)) / 1000);
+        if (time.lasttry != 0 && r1time >= 0  )
+             {
+                req.session.now = time.lasttry;
+                h=1 ; req.session.sec= 0;
+            }
+        else { 
+            req.session.now =now ;
+        }
+       console.log( "this is all time ",now , req.session.now );
+       const rtime = Math.ceil((3600000 - (now - req.session.now)) / 1000);
+        
+            console.log(rtime);
+
+        const avg = req.session.avg || 0 ;
+        const list = req.session.listdata; 
+        const id_q = req.session.id_q;
+        let data_Ai = [];
+        for (let i =0 ; i< list.length ; i++)
+         {
+        if (list[i].valid == 'invalid answer')
+            {
+           data_Ai.push(list[i]);
+            }
+        }
+        req.session.data_Ai = data_Ai;
+        console.log("this is data for ai assist",data_Ai);
+        console.log(avg , "    " , id_q , "wait for data" ,h);
+        if ( h == 0 ){ 
+            req.session.h =1;
+            req.session.sec = id_q;
+        res.render("student/AI-assist.ejs", {
+            avg: avg,
+            data_Ai: data_Ai,
+            id_q: id_q,
+            sec:id_q, 
+            time:0,
+        });
+    }
+    else {
+        let sec = req.session.sec;
+        console.log(sec, id_q );
+        res.render("student/AI-assist.ejs", {
+            avg: avg,
+            data_Ai: data_Ai,
+            id_q: id_q,
+            wait : h , 
+            sec:sec,
+            time :rtime,
+        });
+     
+    }
+    }
+    else
+    {res.redirect("/sing-in");}
+});
+
+async function generateContentWithGoogleAI(prompt) {
+    const apiKey = process.env.GOOGLE_AI1;
+    const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${apiKey}`;
+
+    const requestBody = {
+        contents: [
+            {
+                parts: [
+                    { text: `what topic for ${prompt} in three world at most & give me qustion on same topic you have 1000 token at most` }
+                ]
+            }
+        ]
+    };
+
+    try {
+        const response = await fetch(apiUrl, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify(requestBody),
+        });
+
+        if (!response.ok) {
+            const errorResponse = await response.json();
+            console.error('Google AI API Error Response:', errorResponse);
+            throw new Error(`API request failed with status ${response.status}`);
+        }
+
+        const data = await response.json();
+        return data;
+    } catch (error) {
+        console.error('Error calling Google AI API:', error.message);
+        throw error;
+    }
+}
+
+async function generateContentWithGoogleAI2(prompt) {
+    const apiKey =process.env.GOOGLE_AI2; 
+    const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${apiKey}`;
+  
+    const requestBody = {
+        contents: [
+            {
+                parts: [
+                    { text: `what topic for ${prompt} in three world at most && give me qustion on same topic  you have 1000 token at most` }
+                ]
+            }
+        ]
+    };
+  
+    try {
+        const response = await fetch(apiUrl, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify(requestBody),
+        });
+  
+        if (!response.ok) {
+            const errorResponse = await response.json();
+            console.error('Google AI API Error Response:', errorResponse);
+            throw new Error(`API request failed with status ${response.status}`);
+        }
+  
+        const data = await response.json();
+        return data;
+    } catch (error) {
+        console.error('Error calling Google AI API:', error.message);
+        throw error;
+    }
+  }
+  
+  async function generateContentWithGoogleAI3(prompt) {
+    const apiKey = process.env.GOOGLE_AI3; 
+    const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${apiKey}`;
+  
+    const requestBody = {
+        contents: [
+            {
+                parts: [
+                    { text: `what topic for ${prompt} in three world at most && give me qustion on same topic  you have 1000 token at most` }
+                ]
+            }
+        ]
+    };
+  
+    try {
+        const response = await fetch(apiUrl, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify(requestBody),
+        });
+  
+        if (!response.ok) {
+            const errorResponse = await response.json();
+            console.error('Google AI API Error Response:', errorResponse);
+            throw new Error(`API request failed with status ${response.status}`);
+        }
+  
+        const data = await response.json();
+        return data;
+    } catch (error) {
+        console.error('Error calling Google AI API:', error.message);
+        throw error;
+    }
+  }
+  
+
+app.post('/AI-Assist', async (req, res) => {
+    
+    const userMessage = req.body.r;
+    req.session.h =1 ; 
+    let flag = req.session.flag ||0;
+    if (!userMessage) {
+        return res.status(400).json({ error: 'Message is required' });
+    }
+    console.log('Current flag (before):', flag);
+    // Define a mapping of flag values to corresponding functions
+    const flagActions = {
+        0: generateContentWithGoogleAI,
+        1: generateContentWithGoogleAI2,
+        2: generateContentWithGoogleAI3,
+    };
+    const generateContent = flagActions[flag];
+    try {
+        // Retrieve the appropriate function based on the current flag value
+        
+    
+        if (!generateContent) {
+            throw new Error('Invalid flag value');
+        }
+    
+        
+
+        flag = (flag + 1) % 3;
+        req.session.flag = flag;
+        console.log('Updated flag (after):', flag);
+        
+
+        const assistantResponse = await generateContent(userMessage);
+        
+        const responseText = await assistantResponse.candidates[0].content.parts[0].text;
+       console.log('Response generated successfully:', responseText);
+        res.json({ response: await responseText });
+    } catch (error) {
+        console.error('Error occurred:', error.message);
+        res.status(500).json({ error: 'An error occurred while processing your request.' });
+    }
+    
+    //console.log('End of request handling');
+
+});
+app.post('/data3', async(req, res) => {
+    const { action, data } = req.body;
+   const now = Date.now();
+  
+   
+    if (action === 'save') {
+       
+        req.session.now = now;
+      req.session.data3 = data;
+     // console.log('Data3 saved in session:', data);
+      res.json({ message: `Data3 saved successfully ${now}` });
+    } else if (action === 'load') {
+      
+      if (req.session.data3) {
+      //  console.log('Data3 loaded from session:', req.session.data3);
+      res.json({ data: req.session.data3 });
+
+      } else {
+        res.status(404).json({ message: 'No data3 found in session' });
+      }
+    } else {
+      res.status(400).json({ message: 'Invalid action' });
+    }
+    
+  });
 
 
-//teahcer url 
+
+//teahcer url gpt-4o-mini
 app.get("/profile-tec" , async(req ,res) => 
     { console.log("enter get profile teacher");
         if ( req.isAuthenticated())
@@ -535,7 +979,7 @@ app.get("/startCreatequiz", (req ,res)=>
     else{ res.redirect("/sing-in");}
 });
 
-let Qpre = "e";
+let Qpre = "";
 //let imageurl;
 app.post("/startCreatequiz",upload.fields([
     { name: 'image', maxCount: 1 },
@@ -545,12 +989,12 @@ app.post("/startCreatequiz",upload.fields([
     { name: 'image4', maxCount: 1 },
      ]), (req, res) => {
     console.log("Enter POST /startCreatequiz"); 
-    let saveoredit = req.body.save; 
-    const { question, option1, option2, option3, option4, correctAnswer } = req.body;   
-   let t = req.session.t;
-   
-   
-   
+    const saveoredit = req.body.save; 
+    let { question, option1, option2, option3, option4, correctAnswer } = req.body;   
+   if ( option3 == 1 )
+   {option3 = null;}
+   if (option4 == 1 )
+   {option4 = null;}
     //imageurl= req.file.filename;
    const fileInputmain = req.files.image;
    const fileinput = req.files;
@@ -566,8 +1010,9 @@ app.post("/startCreatequiz",upload.fields([
     console.log('\n saveoredit -_- => '+req.body.save+'\n');
     if(saveoredit === 'save')
         {
+            console.log ("qpre =>" + Qpre , "numberq => " + req.session.numberq , (Qpre != question && req.session.numberq) )
  // after made any oparetion on this data   
-     if (Qpre != question || t == 0 )
+     if ( Qpre != question )
     {
         let urlimg,img1,img2,img3,img4;
         if (fileInputmain)
@@ -617,11 +1062,11 @@ app.post("/startCreatequiz",upload.fields([
         });
 
         console.log("4");
-        console.log(req.session.numberq) ;
-        Qpre = question; 
-        t++;
+        console.log(req.session.numberq) ;  
+        Qpre = question;
+        console.log("-_- " + Qpre);
         }
-        else if(saveoredit === 'submit')
+    else if(saveoredit === 'submit')
         {
             console.log("you can write database -_-\n");
         }
@@ -629,10 +1074,7 @@ app.post("/startCreatequiz",upload.fields([
     console.log("5");
           let raound = req.body;
           let nu = raound.save.slice(12);
-          console.log(fileInputmain +" "+saveoredit);
-         
-       if (Qpre != question && t != 0 )
-        {
+          console.log(fileInputmain +" "+saveoredit, Qpre);
             let urlimg,img1,img2,img3,img4;
         if (fileInputmain)  {  console.log("err => "+ fileInputmain[0].path);
                 urlimg = fileInputmain[0].path.slice(7);      }
@@ -662,7 +1104,7 @@ app.post("/startCreatequiz",upload.fields([
             cop: correctAnswer,
             numstr:req.session.numberq ,
         }; 
-
+     
     console.log("7");
         res.render("teacher/add-writeQ.ejs", 
         {
@@ -671,12 +1113,12 @@ app.post("/startCreatequiz",upload.fields([
               pathimg:"img/images.svg",
         });
 
-       } 
+       
          
 
    }
   
-        //console.log(listdata);
+
         //fileInputmain = null ; 
 });
 
@@ -839,6 +1281,132 @@ app.post("/editquiz-tec", async(req,res)=>{
         res.redirect(`/startCreatequiz?id_q=${q.rows[0].id_q}`);
 });
 
+app.get("/about-quiz", async (req,res)=>{
+    if (req.isAuthenticated())
+        {   const fname = req.session.user.fname; 
+            const lname = req.session.user.lname;
+            const email = req.session.user.email;
+            if (fname && lname){
+                const quize = await db.query(
+             "SELECT * FROM quize WHERE fname = $1 AND lname = $2 AND email=$3 ;",
+             [fname,lname,email]
+            );
+             res.render("teacher/about-quize.ejs",{
+              list : quize.rows,
+          })
+         }  
+
+        }
+        else{ res.redirect("/sing-in");}
+});
+
+app.post("/about-quiz", async(req,res)=>{
+    console.log('enter for post search table teacher');
+
+    const id_q = req.body.id_q;
+    console.log(id_q);
+if (/^\d+$/.test(id_q)){
+    const quize = await db.query(
+        "SELECT * FROM student_qustion WHERE id_q=$1 ;",
+        [id_q]
+       );
+       let list=[] ;
+       for ( let i =0 ; i <quize.rowCount ; i++ )
+       {
+        const quize2 = await db.query(
+        "SELECT * FROM student WHERE email=$1 ;",
+        [quize.rows[i].email]
+       );
+       list.push({
+        name: quize2.rows[0].fname + " " + quize2.rows[0].lname, // Access the first row
+        score: quize.rows[i].score,
+        email: quize.rows[i].id
+    });
+        }
+        res.render("teacher/about-quize.ejs",{
+            list2 : list,
+        })
+}
+else 
+{
+     console.log(id_q.slice(1,));
+     const id = id_q.slice(1,);
+    
+     res.redirect(`/show-what-do-stu?id=${id}`)
+}
+});
+ 
+app.get("/show-what-do-stu" , async (req,res)=>{
+    if (req.isAuthenticated()) {
+  
+        
+     const id = req.query.id;
+    console.log('enter take quiz\n');
+    const quizes = await db.query(
+        "SELECT * FROM student_qustion WHERE id=$1 ;",
+        [id]
+       );
+    const id_q = quizes.rows[0].id_q;
+    
+   // const type = req.query.type;
+    console.log(id_q);
+    const quize = await db.query(
+        "SELECT * FROM qustion WHERE id_q = $1;",
+      [id_q]
+    );
+
+     console.log("Database rows:", quize.rows);
+
+// Populate listdata dynamically
+const listdata = quize.rows.map((row, index) => ({
+Q: row.qustion,
+imgq: row.imagequstion,
+op1: row.choise1,
+op2: row.choise2,
+op3: row.choise3,
+op4: row.choise4,
+imgop1: row.op1,
+imgop2: row.op2,
+imgop3: row.op3,
+imgop4: row.op4,
+cop: row.true_c,
+numstr: index + 1, // Assign a sequence number starting from 1
+yourc : 0
+       }));
+       const quize2 = await db.query(
+        "SELECT * FROM student_qustion WHERE id = $1;",
+      [id]
+    );
+    const yourc = quize2.rows[0].stu_chose;
+    console.log(yourc);
+    console.log(quize2.rows);
+    for (let i =0 ; i< listdata.length ; i++)
+        {
+            let v= yourc.slice(i,i+1);          
+        if(quize.rows[i].true_c == v )
+            { 
+                let valid = 'correct answer';
+                listdata[i].valid = valid;
+               
+             }
+       else {
+           let valid1 = 'invalid answer';
+          listdata[i].valid = valid1 ; 
+          listdata[i].yourc = v ;
+       }
+     }
+    res.render("teacher/showtakestu.ejs", { 
+        listdata:listdata,
+        id_q : id_q,
+        show :1 ,
+      }); 
+    } else {
+        res.redirect("/sing-in");
+    }
+});
+
+
+
 passport.use(
     new Strategy(
         { usernameField: "email", passwordField: "password" }, // Map fields
@@ -850,6 +1418,10 @@ passport.use(
                 );
                 const resulttea = await db.query(
                     "SELECT * FROM teacher WHERE email = $1",
+                    [email]
+                );
+                const resulttea_ver = await db.query(
+                    "SELECT * FROM teacher_ver WHERE email = $1",
                     [email]
                 );
 
@@ -870,6 +1442,16 @@ passport.use(
                     const isPasswordValid = await bcrypt.compare(password, storedpassword);
                     if (isPasswordValid) {
                         return cd(null, user, { state: "T" }); // Attach role for later use
+                    } else {
+                        return cd(null, false, { message: "Invalid password" });
+                    }
+                }else if(resulttea_ver.rows.length>0){
+                    const user = resulttea_ver.rows[0];
+                   
+                    const storedpassword = user.password;
+                    const isPasswordValid = await bcrypt.compare(password, storedpassword);
+                    if (isPasswordValid) {
+                        return cd(null, user, {state:'ver' }); // Attach role for later use
                     } else {
                         return cd(null, false, { message: "Invalid password" });
                     }
