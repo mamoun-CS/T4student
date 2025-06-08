@@ -55,14 +55,6 @@ const sendVerificationEmail = async (toEmail, verificationCode) => {
 
 let db;
 
-if (process.env.DATABASE_URL) {
-  db = new pg.Client({
-    connectionString: process.env.DATABASE_URL,
-    ssl: {
-      rejectUnauthorized: false,
-    },
-  });
-} else {
   db = new pg.Client({
     user: process.env.PG_USER,
     host: process.env.PG_HOST,
@@ -70,8 +62,7 @@ if (process.env.DATABASE_URL) {
     password: process.env.PG_PD,
     port: process.env.PG_PORT,
   });
-}
-//db.connect();
+db.connect();
 
 
   
