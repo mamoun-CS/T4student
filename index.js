@@ -71,7 +71,7 @@ if (process.env.DATABASE_URL) {
     port: process.env.PG_PORT,
   });
 }
-db.connect();
+//db.connect();
 
 
   
