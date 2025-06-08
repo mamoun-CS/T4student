@@ -1,4 +1,4 @@
-let number = 1; // Unique question identifier
+let number = 1; 
 let numstr = 1;
 
 function onMenuClick() {
@@ -23,11 +23,13 @@ function isempty() {
 
 
 
-let p = 0 ;let tw= true ;
+let p = 0 ;
+let tw= true ;
+
 function print() {
 
 
-    let nu = parseInt(this.id.slice(1)); // Extract question number
+    let nu = parseInt(this.id.slice(1)); 
     const sty = document.getElementById("save");
     const setdata = document.getElementById(`S${nu}`);
     const question = document.getElementById("question");
@@ -47,7 +49,7 @@ function print() {
     const correctOption = document.getElementById("correct-answer");
 
     const fileInputmain = document.getElementById('fileInputmain');
-    const imgElementQ = document.getElementById('upQ');
+    const imgq= document.getElementById('upQ');
 
     if (setdata) {
         let data;
@@ -55,10 +57,10 @@ function print() {
             data = JSON.parse(setdata.textContent);
         } catch (err) {
             console.error("Invalid JSON data:", err);
-            return; // Exit the function if JSON is invalid
+            return; 
         }
         if(data.imgq  != 'undefined' || data.imagequstion != 'undefined') {
-        imgElementQ.src ='img/images.svg';
+        imgq.src ='img/images.svg';
          }
          if(data.imgop1 != 'undefined'|| data.imageop1 != 'undefined') {
             img1.src ='img/images.svg';
@@ -95,7 +97,7 @@ function print() {
                     break;
                 case "imgq":
                 case "imagequstion":
-                    imgElementQ.src = value;
+                    imgq.src = value;
                     break;
                 case "imgop1":
                 case "imgeop1":
@@ -137,26 +139,23 @@ function print() {
         option3.value = "";
         option4.value = "";
         correctOption.value = "";
-        imgElementQ.src = "img/images.svg";
+        imgq.src = "img/images.svg";
         img1.src = "img/images.svg"; 
         img2.src ="img/images.svg" ; 
         img3.src = "img/images.svg"; 
         img4.src= "img/images.svg";
-        //window.location.reload();
+        
     }
 }
 
-// Function to edit a question
-function edit() {
-    alert("Edit functionality triggered!");
-}
 
-// Add event listeners after DOM loads
+
 document.addEventListener('DOMContentLoaded', function () {
     const nextButton = document.getElementById('save');
     {
         nextButton.addEventListener('click', () => { 
-                 window.location.reload(); // Pass the function as a callback              
+              
+                 window.location.reload();        
                });
        
     }
@@ -167,6 +166,6 @@ document.addEventListener('DOMContentLoaded', function () {
     }
    const submittion = document.getElementById('submitt');
    {
-    submittion.addEventListener('click', submition);
+    submittion.addEventListener('click', submittion);
    }
 });

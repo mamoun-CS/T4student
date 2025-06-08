@@ -9,6 +9,7 @@ import env from "dotenv";
 import multer from "multer";
 import path from "path";
 import nodemailer from "nodemailer";
+import { verify } from "crypto";
 
 const saltRound = 3;
 const app = express();
@@ -80,6 +81,7 @@ app.use(
         lis:"",
         h: 0 ,
         data3:"",
+        email:"",qpre:"",
 secret: process.env.BOSS_CLICK,
 resave: false , 
 saveUninitialized: true,
@@ -98,9 +100,6 @@ app.use(bodyParser.urlencoded({ extended: true }));
 
 
 
-
-
-// Define routes
 
 app.get("/sing-in", (req, res) => {
     res.render("start/sing-in.ejs"); 
@@ -162,8 +161,168 @@ app.post("/sing-out",async (req, res) => {
      res.redirect('/sing-in');
     });
   });
+app.get("/change-password", (req,res)=>{
+    //console.log(req.session.user.email);
+    const email = req.query.email;
+    const load = req.query.load ||0;
+    console.log(email);
+    res.render('start/changeps.ejs', { email ,load:load});
 
+});
+app.post("/change-password", async(req,res)=> {
+     try {
+    const [passwordpre, passwordnew, passwordnew2 ]= req.body.password;
+    console.log(req.body.password);  
+    console.log(passwordpre, passwordnew, passwordnew2  );
+    const email = req.session?.user?.email || req.query.email; // Get email from session or query
+    console.log(email);
+    if (!email || !passwordpre || !passwordnew || !passwordnew2) {
+        return res.render("start/changeps.ejs", { valid: "All fields are required." ,email:email });
+    }
 
+    if (passwordnew !== passwordnew2) {
+        return res.render("start/changeps.ejs", { valid: "Passwords do not match. Please try again." ,email:email });
+    }
+
+    // Fetch user data
+    const [student, teacher, teacher_ver] = await Promise.all([
+        db.query("SELECT * FROM student WHERE email = $1", [email]),
+        db.query("SELECT * FROM teacher WHERE email = $1", [email]),
+        db.query("SELECT * FROM teacher_ver WHERE email = $1", [email])
+    ]);
+
+    let user = null;
+    let userType = '';
+
+    if (student.rows.length > 0) {
+        user = student.rows[0];
+        userType = 'student';
+    } else if (teacher.rows.length > 0) {
+        user = teacher.rows[0];
+        userType = 'teacher';
+    } else if (teacher_ver.rows.length > 0) {
+        user = teacher_ver.rows[0];
+        userType = 'teacher_ver';
+    } else {
+        return res.render("start/changeps.ejs", { valid: "Invalid email. User not found." ,email:email });
+    }
+    
+    // Compare old password 
+    const isMatch = await bcrypt.compare(passwordpre, user.password);
+    if (!isMatch) {
+        return res.render("start/changeps.ejs", { valid: "Incorrect current password. Please try again." ,email:email });
+    }
+
+    // Hash new password
+    const newHashedPassword = await bcrypt.hash(passwordnew, saltRound);
+
+    // Update password in the correct table
+    if (userType === 'student') {
+        await db.query("UPDATE student SET password = $1 WHERE email = $2", [newHashedPassword, email]);
+    } else if (userType === 'teacher') {
+        await db.query("UPDATE teacher SET password = $1 WHERE email = $2", [newHashedPassword, email]);
+    } else if (userType === 'teacher_ver') {
+        await db.query("UPDATE teacher_ver SET password = $1 WHERE email = $2", [newHashedPassword, email]);
+    }
+
+    res.redirect('/sing-in'); 
+} catch (error) {
+    console.error("Error changing password:", error);
+    res.status(500).json({ error: "Internal server error" });
+}
+});
+
+app.post("/change-passwordr", async(req,res)=>{
+    const [passwordnew, passwordnew2 ]= req.body.password;
+    const email = req.session.email ; 
+    let user ='';let userType ='';
+    console.log(passwordnew, passwordnew2)
+    if (passwordnew !== passwordnew2) {
+        return res.render("start/changeps.ejs", { valid: "Passwords do not match. Please try again." ,email:email ,load:1});
+    }
+    try{
+        const [student, teacher, teacher_ver] = await Promise.all([
+            db.query("SELECT * FROM student WHERE email = $1", [email]),
+            db.query("SELECT * FROM teacher WHERE email = $1", [email]),
+            db.query("SELECT * FROM teacher_ver WHERE email = $1", [email])
+        ]);
+
+        if (student.rows.length > 0) {
+            user = student.rows[0];
+            userType = 'student';
+        } else if (teacher.rows.length > 0) {
+            user = teacher.rows[0];
+            userType = 'teacher';
+        } else if (teacher_ver.rows.length > 0) {
+            user = teacher_ver.rows[0];
+            userType = 'teacher_ver';
+        } else {
+            return res.render("start/changeps.ejs", { valid: "Invalid email. User not found." ,email:email,load:1 });
+        }
+        const newHashedPassword = await bcrypt.hash(passwordnew, saltRound);
+        if (userType === 'student') {
+            await db.query("UPDATE student SET password = $1 WHERE email = $2", [newHashedPassword, email]);
+        } else if (userType === 'teacher') {
+            await db.query("UPDATE teacher SET password = $1 WHERE email = $2", [newHashedPassword, email]);
+        } else if (userType === 'teacher_ver') {
+            await db.query("UPDATE teacher_ver SET password = $1 WHERE email = $2", [newHashedPassword, email]);
+        }
+       
+        res.redirect('/sing-in'); 
+    }catch{
+      console.error("Error changing password:", error);
+    res.status(500).json({ error: "Internal server error" });
+    }
+
+});
+
+app.get('/forget-password',(req,res)=>{
+    res.render('start/forgetpass.ejs');
+})
+
+app.post('/forget-password' , async (req,res) => { 
+     let email = req.body.email; 
+
+     if (!email) {
+        return res.render('start/forgetpass.ejs', { valid: "Please enter your email." });
+    }
+try{      
+     const [student, teacher, teacher_ver] = await Promise.all([
+        db.query("SELECT * FROM student WHERE email = $1", [email]),
+        db.query("SELECT * FROM teacher WHERE email = $1", [email]),
+        db.query("SELECT * FROM teacher_ver WHERE email = $1", [email])
+    ]); 
+    if( student.rows.length > 0 || teacher.rows.length  > 0  || teacher_ver.rows.length > 0)
+        {
+            const verificationCode = Math.floor(100000 + Math.random() * 900000).toString();
+            req.session.verify = verificationCode;
+          const emailSent = await sendVerificationEmail(email, verificationCode);
+          req.session.email= email;
+          res.render('start/forgetpass.ejs',{load: 1});
+        }
+    else {
+        res.render('start/forgetpass.ejs',{ valid : "Email not found "});
+    }
+} catch (error) {
+    console.error("Error in forget-password:", error);
+    return res.status(500).send("Internal Server Error");
+}
+
+});
+
+app.post('/verforget-password' , (req,res)=>{
+    const code = req.body.code;
+    const email = req.session.email;
+    let codev = req.session.verify;
+    if (code === codev)
+    {
+   res.redirect(`/change-password?email=${email}&&load=${1}`);
+    }
+    else{
+        res.render('start/forgetpass.ejs',{valid:"error in code verfiy",load :1 });
+    }
+
+});
 
 app.get("/sing-up", (req, res) => {
     res.render("start/sing-up.ejs"); 
@@ -266,6 +425,8 @@ app.get("/verify",(req,res)=>
     });
  app.post("/verify",async(req,res)=>
     {
+        
+        console.log(r,req.query.load);
        const state = req.session.user.state ||0 ; 
        const email = req.session.user.email ||0 ; 
        console.log(state , email );
@@ -292,13 +453,11 @@ app.get("/verify",(req,res)=>
                 let email = result_ver.rows[0].email; 
                 return res.redirect(`/verify?email=${email}&state=${s}&valid=code+is+not+correct+please+try+again`);
              }
-            } else {
+            }
+             else {
     
         const {fname , lname , email , hash , id_student} = req.session.cuser||0;
         let codev = req.session.verify;
-        console.log(req.session.cuser , code,codev);
-        console.log(code );
-        console.log(code === codev);
         if (code === codev)
         {
             console.log('correct code verify');
@@ -852,9 +1011,7 @@ app.post('/AI-Assist', async (req, res) => {
     };
     const generateContent = flagActions[flag];
     try {
-        // Retrieve the appropriate function based on the current flag value
-        
-    
+
         if (!generateContent) {
             throw new Error('Invalid flag value');
         }
@@ -875,25 +1032,19 @@ app.post('/AI-Assist', async (req, res) => {
         console.error('Error occurred:', error.message);
         res.status(500).json({ error: 'An error occurred while processing your request.' });
     }
-    
-    //console.log('End of request handling');
 
 });
 app.post('/data3', async(req, res) => {
     const { action, data } = req.body;
    const now = Date.now();
-  
-   
     if (action === 'save') {
        
         req.session.now = now;
       req.session.data3 = data;
-     // console.log('Data3 saved in session:', data);
       res.json({ message: `Data3 saved successfully ${now}` });
     } else if (action === 'load') {
       
       if (req.session.data3) {
-      //  console.log('Data3 loaded from session:', req.session.data3);
       res.json({ data: req.session.data3 });
 
       } else {
@@ -905,9 +1056,6 @@ app.post('/data3', async(req, res) => {
     
   });
 
-
-
-//teahcer url gpt-4o-mini
 app.get("/profile-tec" , async(req ,res) => 
     { console.log("enter get profile teacher");
         if ( req.isAuthenticated())
@@ -979,8 +1127,6 @@ app.get("/startCreatequiz", (req ,res)=>
     else{ res.redirect("/sing-in");}
 });
 
-let Qpre = "";
-//let imageurl;
 app.post("/startCreatequiz",upload.fields([
     { name: 'image', maxCount: 1 },
     { name: 'image1', maxCount: 1 },
@@ -988,16 +1134,22 @@ app.post("/startCreatequiz",upload.fields([
     { name: 'image3', maxCount: 1 },
     { name: 'image4', maxCount: 1 },
      ]), (req, res) => {
+      let Qpre = req.session.qpre ;  
     console.log("Enter POST /startCreatequiz"); 
     const saveoredit = req.body.save; 
-    let { question, option1, option2, option3, option4, correctAnswer } = req.body;   
-   if ( option3 == 1 )
-   {option3 = null;}
-   if (option4 == 1 )
-   {option4 = null;}
+    let { question, option1, option2, option3, option4, correctAnswer } = req.body;  
+    console.log('pre data ',option1);
+    if (!option1){
+        option1 = 'T4s'; console.log('this is no datas wfwugvui');}
+
+
+    option1 = option1 === "T4s" ? null : option1;
+    option2 = option2 === "T4s" ? null : option2;
+    option3 = option3 === "T4s" ? null : option3;
+    option4 = option4 === "T4s" ? null : option4;
     //imageurl= req.file.filename;
    const fileInputmain = req.files.image;
-   const fileinput = req.files;
+   //const fileinput = req.files;
    let fileinput1 =req.files.image1 ;
    let fileinput2 =req.files.image2  ;
    let fileinput3 =req.files.image3 ;
@@ -1064,6 +1216,7 @@ app.post("/startCreatequiz",upload.fields([
         console.log("4");
         console.log(req.session.numberq) ;  
         Qpre = question;
+        req.session.qpre = Qpre;
         console.log("-_- " + Qpre);
         }
     else if(saveoredit === 'submit')
@@ -1106,6 +1259,7 @@ app.post("/startCreatequiz",upload.fields([
         }; 
      
     console.log("7");
+    
         res.render("teacher/add-writeQ.ejs", 
         {
               numberQ:req.session.numberq,
@@ -1348,7 +1502,7 @@ app.get("/show-what-do-stu" , async (req,res)=>{
        );
     const id_q = quizes.rows[0].id_q;
     
-   // const type = req.query.type;
+  
     console.log(id_q);
     const quize = await db.query(
         "SELECT * FROM qustion WHERE id_q = $1;",
@@ -1357,7 +1511,7 @@ app.get("/show-what-do-stu" , async (req,res)=>{
 
      console.log("Database rows:", quize.rows);
 
-// Populate listdata dynamically
+
 const listdata = quize.rows.map((row, index) => ({
 Q: row.qustion,
 imgq: row.imagequstion,
@@ -1409,7 +1563,7 @@ yourc : 0
 
 passport.use(
     new Strategy(
-        { usernameField: "email", passwordField: "password" }, // Map fields
+        { usernameField: "email", passwordField: "password" }, 
         async function verify(email, password, cd) {
             try {
                 const resultstu = await db.query(
@@ -1431,7 +1585,7 @@ passport.use(
                     const storedpassword = user.password;
                     const isPasswordValid = await bcrypt.compare(password, storedpassword);
                     if (isPasswordValid) {
-                        return cd(null, user, { state: "S" }); // Attach role for later use
+                        return cd(null, user, { state: "S" });
                     } else {
                         return cd(null, false, { message: "Invalid password" });
                     }
@@ -1441,7 +1595,7 @@ passport.use(
                     const storedpassword = user.password;
                     const isPasswordValid = await bcrypt.compare(password, storedpassword);
                     if (isPasswordValid) {
-                        return cd(null, user, { state: "T" }); // Attach role for later use
+                        return cd(null, user, { state: "T" }); 
                     } else {
                         return cd(null, false, { message: "Invalid password" });
                     }
@@ -1451,7 +1605,7 @@ passport.use(
                     const storedpassword = user.password;
                     const isPasswordValid = await bcrypt.compare(password, storedpassword);
                     if (isPasswordValid) {
-                        return cd(null, user, {state:'ver' }); // Attach role for later use
+                        return cd(null, user, {state:'ver' }); 
                     } else {
                         return cd(null, false, { message: "Invalid password" });
                     }
@@ -1481,7 +1635,7 @@ passport.deserializeUser(async (email, cb) => {
             return cb(null, resulttea.rows[0]);
         }
 
-        return cb(null, false); // User not found
+        return cb(null, false); 
     } catch (err) {
         return cb(err);
     }

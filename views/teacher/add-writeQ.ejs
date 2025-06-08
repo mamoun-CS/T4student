@@ -62,17 +62,14 @@
                                      <% } %>
                                  <h1 class='num'>Q<%= i+1 %> </h1>
                          </div>
-                      <%} %> <!--<script>const sum = <%= locals.numberQ %></script>-->
+                      <%} %> 
                     </div>
                     <br>
                  <% if (  locals.numberQ != 0    ) {%>
                     <div class="viwedisaply bottom-right-button" >
                         <a href="/submitQ"><button id="submitt" type="button" class="btn btn-outline-primary me-2" value="submit">Submit</button></a>
                     </div>
-                   <%}%>
-        
-
-                            
+                   <%}%>      
                                 
                         <script src="js/submitqustion.js"></script>
                         
@@ -102,7 +99,7 @@
                 
                             <!-- Options -->
                             <div class="form-floating imgdes">
-                                <input type="text" class="form-control" id="option1" name="option1" placeholder="Option 1" required>
+                                <input type="text" class="form-control" id="option1" name="option1" placeholder="Option 1" >
                                 <% if (locals.pathimg && locals.pathimg != "undifined"){%>
                                     <img id="up1" src=<%=pathimg%> alt="Click to Upload" width="30px" height="50px">
                                    <% }else {%>
@@ -113,7 +110,7 @@
                             </div>
                             <br>
                             <div class="form-floating imgdes">
-                                <input type="text" class="form-control" id="option2" name="option2" placeholder="Option 2" required>
+                                <input type="text" class="form-control" id="option2" name="option2" placeholder="Option 2" >
                                 <% if (locals.pathimg && locals.pathimg != "undifined"){%>
                                     <img id="up2" src=<%=pathimg%> alt="Click to Upload" width="30px" height="50px">
                                    <% }else {%>
@@ -124,7 +121,7 @@
                             </div>
                             <br>
                             <div class="form-floating imgdes">
-                                <input type="text" class="form-control" id="option3" name="option3" placeholder="Option 3" required>
+                                <input type="text" class="form-control" id="option3" name="option3" placeholder="Option 3" >
                                 <% if (locals.pathimg && locals.pathimg != "undifined"){%>
                                     <img id="up3" src=<%=pathimg%> alt="Click to Upload" width="30px" height="50px">
                                    <% }else {%>
@@ -135,7 +132,7 @@
                             </div>
                             <br>
                             <div class="form-floating imgdes">
-                                <input type="text" class="form-control" id="option4" name="option4" placeholder="Option 4" required>
+                                <input type="text" class="form-control" id="option4" name="option4" placeholder="Option 4" >
                                 <% if (locals.pathimg && locals.pathimg != "undifined"){%>
                                     <img id="up4" src=<%=pathimg%> alt="Click to Upload" width="30px" height="50px">
                                    <% }else {%>
