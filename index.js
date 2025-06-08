@@ -53,13 +53,26 @@ const sendVerificationEmail = async (toEmail, verificationCode) => {
   };
   export default sendVerificationEmail;
 
-const db = new pg.Client({
-  connectionString: process.env.DATABASE_URL,
-  ssl: {
-    rejectUnauthorized: false, // Render requires SSL for Postgres
-  },
-});
+let db;
+
+if (process.env.DATABASE_URL) {
+  db = new pg.Client({
+    connectionString: process.env.DATABASE_URL,
+    ssl: {
+      rejectUnauthorized: false,
+    },
+  });
+} else {
+  db = new pg.Client({
+    user: process.env.PG_USER,
+    host: process.env.PG_HOST,
+    database: process.env.PG_DB,
+    password: process.env.PG_PD,
+    port: process.env.PG_PORT,
+  });
+}
 db.connect();
+
 
   
 app.use(
