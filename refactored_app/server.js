@@ -4,15 +4,15 @@ import session from "express-session";
 import env from "dotenv";
 import path from "path";
 
-// Configuration and Middleware from refactored_app
-import passport from "./refactored_app/config/passport.js";
-import errorHandler from "./refactored_app/middleware/error.js";
+// Configuration and Middleware
+import passport from "./config/passport.js";
+import errorHandler from "./middleware/error.js";
 
-// Routes from refactored_app
-import authRoutes from "./refactored_app/routes/auth.routes.js";
-import studentRoutes from "./refactored_app/routes/student.routes.js";
-import teacherRoutes from "./refactored_app/routes/teacher.routes.js";
-import aiRoutes from "./refactored_app/routes/ai.routes.js";
+// Routes
+import authRoutes from "./routes/auth.routes.js";
+import studentRoutes from "./routes/student.routes.js";
+import teacherRoutes from "./routes/teacher.routes.js";
+import aiRoutes from "./routes/ai.routes.js";
 
 // Load Environment variables
 env.config();
@@ -54,7 +54,8 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use(bodyParser.urlencoded({ extended: true }));
 
-// Serve Static Assets Publicly
+// Serve Static Assets Publicly (Original code pointed to "public")
+// To ensure correct pathing within refactored_app if run from root:
 app.use(express.static(path.join(process.cwd(), "public")));
 
 // --- Mounted Routes ---
@@ -76,5 +77,5 @@ app.use(errorHandler);
 // --- Server Initialization ---
 const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => {
-    console.log(`Server is running on http://localhost:${PORT}`);
+    console.log(`Refactored Server is running on http://localhost:${PORT}`);
 });
